@@ -12,6 +12,7 @@ namespace API.Models
     public class DetailRequest
     {
         [Key][Required]
+        //public int DetailRequestID { get; set; }
         public int RequestID { get; set; }
         [Required] 
         public int ApproveRM { get; set; }
@@ -21,7 +22,7 @@ namespace API.Models
         public string HR_NIK { get; set; }
         [Required] 
         public DateTime ApproveRMDate { get; set; }
-        [Required][JsonIgnore]
+        [Required]
         public DateTime ApproveHRDate { get; set; }
         [JsonIgnore]
         public virtual Request Request { get; set; }

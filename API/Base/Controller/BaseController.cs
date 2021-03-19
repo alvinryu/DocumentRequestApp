@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using API.Repository.Interface;
+using API.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +15,7 @@ namespace API.Base.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class BaseController<Entity, Repository, Key> : ControllerBase
         where Entity : class
         where Repository : IRepository<Entity, Key>
@@ -95,6 +100,39 @@ namespace API.Base.Controller
             else
             {
                 return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Update Data", data = "" });
+            }
+        }
+
+        [HttpPost("SendEmail")]
+        [AllowAnonymous]
+        public IActionResult SendEmail(SendEmailVM sendEmailVM)
+        {
+            string to = sendEmailVM.Email; //To address    
+            string from = "xianlanzou@gmail.com"; //From address    
+            MailMessage message = new MailMessage(from, to);
+
+            message.Subject = sendEmailVM.MessageSubject;
+            message.Body = sendEmailVM.MessageBody;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = true;
+
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587); //Gmail smtp    
+            System.Net.NetworkCredential basicCredential1 = new
+            System.Net.NetworkCredential(from, "akiyam4mio");
+
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Credentials = basicCredential1;
+
+            try
+            {
+                client.Send(message);
+                return Ok(new { status = HttpStatusCode.OK, Message = "Message send Successfully", data = "" });
+            }
+            catch
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Message failed to send", data = "" });
             }
         }
     }

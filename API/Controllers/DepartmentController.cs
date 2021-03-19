@@ -13,7 +13,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentController : BaseController<Department, DepartmentRepository, string>
+    public class DepartmentController : BaseController<Department, DepartmentRepository, int>
     {
         private readonly DepartmentRepository _departmentRepository;
         private readonly IConfiguration _configuration;

@@ -4,14 +4,16 @@ using API.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20210318134015_4")]
+    partial class _4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,8 +72,10 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Models.DetailRequest", b =>
                 {
-                    b.Property<int>("RequestID")
-                        .HasColumnType("int");
+                    b.Property<int>("DetailRequestID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ApproveHR")
                         .HasColumnType("int");
@@ -89,7 +93,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("RequestID");
+                    b.HasKey("DetailRequestID");
 
                     b.ToTable("Tb_T_DetailRequest");
                 });
@@ -154,32 +158,6 @@ namespace API.Migrations
                     b.ToTable("Tb_M_Person");
                 });
 
-            modelBuilder.Entity("API.Models.Request", b =>
-                {
-                    b.Property<int>("RequestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("DocumentTypeTypeID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PersonNIK")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("RequestID");
-
-                    b.HasIndex("DocumentTypeTypeID");
-
-                    b.HasIndex("PersonNIK");
-
-                    b.ToTable("Tb_T_Request");
-                });
-
             modelBuilder.Entity("API.Models.Role", b =>
                 {
                     b.Property<int>("RoleID")
@@ -226,17 +204,6 @@ namespace API.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("API.Models.DetailRequest", b =>
-                {
-                    b.HasOne("API.Models.Request", "Request")
-                        .WithOne("DetailRequest")
-                        .HasForeignKey("API.Models.DetailRequest", "RequestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Request");
-                });
-
             modelBuilder.Entity("API.Models.Person", b =>
                 {
                     b.HasOne("API.Models.Department", "Department")
@@ -244,25 +211,6 @@ namespace API.Migrations
                         .HasForeignKey("DepartmentID");
 
                     b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("API.Models.Request", b =>
-                {
-                    b.HasOne("API.Models.DocumentType", "DocumentType")
-                        .WithMany("Requests")
-                        .HasForeignKey("DocumentTypeTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Models.Person", "Person")
-                        .WithMany("Requests")
-                        .HasForeignKey("PersonNIK")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DocumentType");
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("API.Models.Account", b =>
@@ -275,21 +223,9 @@ namespace API.Migrations
                     b.Navigation("People");
                 });
 
-            modelBuilder.Entity("API.Models.DocumentType", b =>
-                {
-                    b.Navigation("Requests");
-                });
-
             modelBuilder.Entity("API.Models.Person", b =>
                 {
                     b.Navigation("Account");
-
-                    b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("API.Models.Request", b =>
-                {
-                    b.Navigation("DetailRequest");
                 });
 
             modelBuilder.Entity("API.Models.Role", b =>

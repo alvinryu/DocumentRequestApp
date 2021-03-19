@@ -17,11 +17,19 @@ namespace API.Repository.Data
             _configuration = configuration;
         }
 
-        public IEnumerable<ChartVM> Chart()
+        public IEnumerable<ChartVM> ChartRole()
         {
             var _chartRepository = new GeneralDapperRepository<ChartVM>(_configuration);
 
-            var result = _chartRepository.Get("SP_RetrieveType");
+            var result = _chartRepository.Get("SP_RetrieveRole");
+            return result;
+        }      
+        
+        public IEnumerable<ChartVM> ChartDocType()
+        {
+            var _chartRepository = new GeneralDapperRepository<ChartVM>(_configuration);
+
+            var result = _chartRepository.Get("SP_RetrieveDocType");
             return result;
         }
     }

@@ -23,10 +23,25 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet("Chart")]
-        public IActionResult Chart()
+        [HttpGet("ChartRole")]
+        public IActionResult ChartRole()
         {
-            var result = _dashboardRepository.Chart();
+            var result = _dashboardRepository.ChartRole();
+
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = result, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return NotFound(new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", data = "" });
+            }
+        }
+
+        [HttpGet("ChartDocType")]
+        public IActionResult ChartDocType()
+        {
+            var result = _dashboardRepository.ChartDocType();
 
             if (result != null)
             {

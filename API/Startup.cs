@@ -32,11 +32,11 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                .AddNewtonsoftJson(options =>
-                options.SerializerSettings.DefaultValueHandling =
-                Newtonsoft.Json.DefaultValueHandling.Ignore
-                );
+            //services.AddMvc()
+            //    .AddNewtonsoftJson(options =>
+            //    options.SerializerSettings.DefaultValueHandling =
+            //    Newtonsoft.Json.DefaultValueHandling.Ignore
+            //    );
             
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
@@ -45,10 +45,11 @@ namespace API
                 );
 
             services.AddDbContext<MyContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DocumentReqAPI")));
+                options.UseSqlServer(Configuration.GetConnectionString("DocumentReqAPI"))
+                        .UseLazyLoadingProxies());
 
-            services.AddDbContext<MyContext>(options =>
-                options.UseLazyLoadingProxies());
+            //services.AddDbContext<MyContext>(options =>
+            //    options.UseLazyLoadingProxies());
 
             services.AddScoped<PersonRepository>();
             services.AddScoped<AccountRepository>();

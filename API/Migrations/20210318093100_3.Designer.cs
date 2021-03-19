@@ -4,14 +4,16 @@ using API.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20210318093100_3")]
+    partial class _3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,7 +73,9 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.DetailRequest", b =>
                 {
                     b.Property<int>("RequestID")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ApproveHR")
                         .HasColumnType("int");
@@ -157,15 +161,12 @@ namespace API.Migrations
             modelBuilder.Entity("API.Models.Request", b =>
                 {
                     b.Property<int>("RequestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
-                    b.Property<int>("DocumentTypeTypeID")
+                    b.Property<int?>("DocumentTypeTypeID")
                         .HasColumnType("int");
 
                     b.Property<string>("PersonNIK")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("RequestDate")
@@ -226,17 +227,6 @@ namespace API.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("API.Models.DetailRequest", b =>
-                {
-                    b.HasOne("API.Models.Request", "Request")
-                        .WithOne("DetailRequest")
-                        .HasForeignKey("API.Models.DetailRequest", "RequestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Request");
-                });
-
             modelBuilder.Entity("API.Models.Person", b =>
                 {
                     b.HasOne("API.Models.Department", "Department")
@@ -250,15 +240,19 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Models.DocumentType", "DocumentType")
                         .WithMany("Requests")
-                        .HasForeignKey("DocumentTypeTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DocumentTypeTypeID");
 
                     b.HasOne("API.Models.Person", "Person")
                         .WithMany("Requests")
-                        .HasForeignKey("PersonNIK")
+                        .HasForeignKey("PersonNIK");
+
+                    b.HasOne("API.Models.DetailRequest", "DetailRequest")
+                        .WithOne("Request")
+                        .HasForeignKey("API.Models.Request", "RequestID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DetailRequest");
 
                     b.Navigation("DocumentType");
 
@@ -275,6 +269,11 @@ namespace API.Migrations
                     b.Navigation("People");
                 });
 
+            modelBuilder.Entity("API.Models.DetailRequest", b =>
+                {
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("API.Models.DocumentType", b =>
                 {
                     b.Navigation("Requests");
@@ -285,11 +284,6 @@ namespace API.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("API.Models.Request", b =>
-                {
-                    b.Navigation("DetailRequest");
                 });
 
             modelBuilder.Entity("API.Models.Role", b =>

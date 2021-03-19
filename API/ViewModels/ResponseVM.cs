@@ -9,7 +9,7 @@ namespace API.ViewModels
     {
         public string Status { get; set; }
         public string Message { get; set; }
-        public IEnumerable<Entity> Data { get; set; }
+        public Entity Data { get; set; }
         public string Token { get; set; }
     }
 }

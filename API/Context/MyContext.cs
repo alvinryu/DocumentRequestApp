@@ -23,39 +23,39 @@ namespace API.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Person>()
-                .HasOne(a => a.Account)
-                .WithOne(b => b.Person)
-                .HasForeignKey<Account>(b => b.NIK);
+                .HasOne(person => person.Account)
+                .WithOne(account => account.Person)
+                .HasForeignKey<Account>(account => account.NIK);
 
             modelBuilder.Entity<Person>()
-                .HasMany(c => c.Requests)
-                .WithOne(e => e.Person);
+                .HasMany(person => person.Requests)
+                .WithOne(request => request.Person);
 
             modelBuilder.Entity<Department>()
-                .HasMany(c => c.People)
-                .WithOne(e => e.Department);
+                .HasMany(department => department.People)
+                .WithOne(person => person.Department);
 
-            modelBuilder.Entity<Request>()
-                .HasOne(a => a.DetailRequest)
-                .WithOne(b => b.Request)
-                .HasForeignKey<Request>(b => b.RequestID);
+            modelBuilder.Entity<DetailRequest>()
+                .HasOne(detailrequest => detailrequest.Request)
+                .WithOne(request => request.DetailRequest)
+                .HasForeignKey<DetailRequest>(detailrequest => detailrequest.RequestID);
 
             modelBuilder.Entity<DocumentType>()
-                .HasMany(c => c.Requests)
-                .WithOne(e => e.DocumentType);
+                .HasMany(documenttype => documenttype.Requests)
+                .WithOne(request => request.DocumentType);
 
             modelBuilder.Entity<AccountRole>()
-                .HasKey(ar => new { ar.NIK, ar.RoleID });
+                .HasKey(accountrole => new { accountrole.NIK, accountrole.RoleID });
 
             modelBuilder.Entity<AccountRole>()
-                .HasOne(a => a.Account)
-                .WithMany(ar => ar.AccountRoles)
-                .HasForeignKey(a => a.NIK);
+                .HasOne(accountrole => accountrole.Account)
+                .WithMany(account => account.AccountRoles)
+                .HasForeignKey(accountrole => accountrole.NIK);
 
             modelBuilder.Entity<AccountRole>()
-                .HasOne(r => r.Role)
-                .WithMany(ar => ar.AccountRoles)
-                .HasForeignKey(r => r.RoleID);
+                .HasOne(accountrole => accountrole.Role)
+                .WithMany(role => role.AccountRoles)
+                .HasForeignKey(accountrole => accountrole.RoleID);
         }
     }
 }

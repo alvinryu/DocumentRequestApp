@@ -14,7 +14,9 @@ namespace API.Models
         [Key][Required]
         public int RequestID { get; set; }
         [Required]
-        public string NIK { get; set; }
+        public string PersonNIK { get; set; }
+        [Required]
+        public int DocumentTypeTypeID { get; set; }
         [Required]
         public DateTime RequestDate { get; set; }
         [JsonIgnore]

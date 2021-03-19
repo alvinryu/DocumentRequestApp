@@ -32,7 +32,7 @@ namespace API.Controllers
 
             if (result != null)
             {
-                return Ok(new { status = HttpStatusCode.OK, data = result, message = "Data Ditemukan" });
+                return Ok(new { status = HttpStatusCode.OK, data = "", message = "Data Ditemukan" });
             }
             else
             {
