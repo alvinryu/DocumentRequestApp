@@ -32,24 +32,19 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddMvc()
-            //    .AddNewtonsoftJson(options =>
-            //    options.SerializerSettings.DefaultValueHandling =
-            //    Newtonsoft.Json.DefaultValueHandling.Ignore
-            //    );
-            
+            services.AddMvc()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.DefaultValueHandling =
+                Newtonsoft.Json.DefaultValueHandling.Ignore
+                );
+
+            services.AddControllers();
+
             services.AddMvc()
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling =
                 Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
-
-            services.AddDbContext<MyContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DocumentReqAPI"))
-                        .UseLazyLoadingProxies());
-
-            //services.AddDbContext<MyContext>(options =>
-            //    options.UseLazyLoadingProxies());
 
             services.AddScoped<PersonRepository>();
             services.AddScoped<AccountRepository>();
@@ -61,7 +56,12 @@ namespace API
             services.AddScoped<DocumentTypeRepository>();
             services.AddScoped<DashboardRepository>();
 
-            services.AddControllers();
+            services.AddDbContext<MyContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DocumentReqAPI"))
+                        .UseLazyLoadingProxies());
+
+            //services.AddDbContext<MyContext>(options =>
+            //    options.UseLazyLoadingProxies());
 
             services.AddSwaggerGen(c =>
             {
@@ -86,9 +86,12 @@ namespace API
                 });
             });
 
-            services.AddSwaggerGen();
-
             services.AddTokenAuthentication(Configuration);
+
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -121,6 +124,8 @@ namespace API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            app.UseCors(options => options.AllowAnyOrigin());
         }
     }
 }
