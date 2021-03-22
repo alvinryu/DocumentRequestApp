@@ -1,0 +1,154 @@
+﻿@model API.ViewModels.LoginVM
+
+@{ Layout = "_Layout";
+    ViewBag.Title = "Login";
+}
+
+<h1 class="text-center">Welcome Back!</h1>
+
+<div class="row  justify-content-center align-items-center">
+    <div class="col-md-4">
+        <form id="loginForm" name="loginForm">
+            <div class="form-group">
+                <label for="email" class="control-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="password" class="control-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+            <div class="form-group mt-2">
+                <button type="submit" class="btn btn-primary" form="loginForm">Login</button>
+            </div>
+        </form>
+        <div class="form-group mt-2">
+            <button class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
+                Forgot Password
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Forgot Password</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="forgotForm" name="forgotForm">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="emailForgot" class="col-form-label">Email:</label>
+                                <input type="email" class="form-control" id="emailForgot" name="emailForgot">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="forgotForm">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $("#loginForm").validate({
+                rules: {
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        required: true,
+                    }
+                },
+                submitHandler: function (loginForm) {
+                    var form = $(loginForm);
+                    var urlString = "login"
+                    $.ajax({
+                        type: "POST",
+                        url: urlString,
+                        data: form.serialize(),
+                        success: function (data) {
+                            console.log(data);
+                            sessionStorage.token = data['token'];
+                            console.log(sessionStorage.token);
+                            if (data.status == "200") {
+                                window.location.href = "@Url.Action("Index", "Person")";
+                            } else {
+                                Swal.fire(
+                                    'Failed',
+                                    'Username or Password incorrect',
+                                    'error'
+                                )
+                            }
+                        },
+                        error: function (error) {
+                            Swal.fire(
+                                    'Failed',
+                                    'Username or Password incorrect',
+                                    'error'
+                            )
+                        },
+                    });
+                }
+         });
+
+        $("#forgotForm").validate({
+                rules: {
+                    email: {
+                        required: true,
+                        email: true
+                    }
+                },
+                submitHandler: function (forgotForm) {
+                    var form = $(forgotForm);
+                    var urlString;
+                    if (isUpdate == 1)
+                        urlString = "person/put"
+                    else
+                        urlString = "person/post"
+                    $.ajax({
+                        type: "POST",
+                        url: urlString,
+                        data: form.serialize(),
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader('Authorization', sessionStorage.token);
+                        },
+                        success: function (data) {
+                            $('#modal').modal('hide');
+                            Swal.fire(
+                                    'Saved!',
+                                    'Your data has been saved.',
+                                    'success'
+                                )
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                        error: function (error) {
+                            alert('error;');
+                            $('#modal').modal('hide');
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                    });
+                }
+        });
+
+        function resetUpdate() {
+            isUpdate = 0;
+            $('#forgotForm').trigger('reset');
+        }
+    </script>
+}
+
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace API.Repository.Data
 {
-    public class DepartmentRepository : GeneralRepository<MyContext, Department, string>
+    public class DepartmentRepository : GeneralRepository<MyContext, Department, int>
     {
         public IConfiguration _configuration;
         readonly DynamicParameters _parameters = new DynamicParameters();

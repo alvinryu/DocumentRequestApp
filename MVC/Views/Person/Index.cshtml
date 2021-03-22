@@ -1,0 +1,373 @@
+﻿
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Person";
+}
+
+<div class="p-3">
+    <div class="row">
+        <h2 class="page-header">
+            Data
+            <small>Person</small>
+        </h2>
+    </div>
+    <div>
+        <button class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
+            <i class="fas fa-user-plus"></i> Add
+        </button>
+    </div>
+    <div>
+        <table id="table_id" class="table table-sm table-striped table-bordered m-2">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIK</th>
+                    <th>KTP</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Birth Date</th>
+                    <th>Address</th>
+                    <th>Email</th>
+                    <th>Join Date</th>
+                    <th>Department</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>No</th>
+                    <th>NIK</th>
+                    <th>KTP</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Birth Date</th>
+                    <th>Address</th>
+                    <th>Email</th>
+                    <th>Join Date</th>
+                    <th>Department</th>
+                    <th>Actions</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- Add Person Modal-->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Person</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="personForm" name="personForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nik" class="col-form-label">NIK:</label>
+                                <input type="text" class="form-control" id="nik" name="nik">
+                            </div>
+                            <div class="form-group">
+                                <label for="ktp" class="col-form-label">KTP:</label>
+                                <input type="text" class="form-control" id="ktp" name="ktp">
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName" class="col-form-label">First Name:</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" class="col-form-label">Last Name:</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone" class="col-form-label">Phone:</label>
+                                <input type="number" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="birthDate" class="col-form-label">Birth Date:</label>
+                                <input type="date" class="form-control" id="birthDate" name="birthDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-form-label">Email:</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="address" class="col-form-label">Address:</label>
+                                <textarea id="address" name="address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="joinDate" class="col-form-label">Join Date:</label>
+                                <input type="date" class="form-control" id="joinDate" name="joinDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="department" class="col-form-label">Department:</label>
+                                <input type="text" class="form-control" id="department" name="department">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="personForm">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        var isUpdate = 0;
+        $(document).ready(function () {
+            var isUpdate = 0;
+            var t = $('#table_id').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'csv',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6]
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6]
+                        }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        pageSize: 'A4', //formato stampa
+                        alignment: "center",
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6]
+                        },
+                        customize: function (doc) {
+                            doc.styles.tableHeader.alignment = 'left'; //giustifica a sinistra titoli colonne
+                            doc.content[1].table.widths = [90, 90, 90, 90, 90, 90, 90, 90]; //costringe le colonne ad occupare un dato spazio per gestire il baco del 100% width che non si concretizza mai
+                        }
+                    },
+                ],
+                "filter": true,
+                "orderMulti": false,
+                "ajax": {
+                    "url": "Person/Get",
+                    "type": "get",
+                    "data": "result",
+                    "dataType": "json",
+                    //"beforeSend": function (xhr) {
+                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    //}
+                },
+                "columnDefs": [
+                    {
+                        "targets": [1],
+                        "visible": false,
+                    },
+                    {
+                        "targets": [10],
+                        "orderable": false,
+                        "searchable": false
+                    }
+                ],
+                "columns": [
+                    {
+                        "data": 'id',
+                        "defaultContent": ''
+                    },
+                    { "data": 'nik' },
+                    {"data": 'ktp'},
+                    {
+                        "data": null,
+                        render: function (data, type, row) {
+                            return row['firstName'] + " " + row['lastName'];
+                        }
+                    },
+                    {
+                        data: 'phone',
+                        render: function (data) {
+                            var str = data;
+                            var re = /^0/;
+                            if (re.test(data)) {
+                                str = str.replace(re, "+62")
+                            }
+                            return str;
+                        }
+                    },
+                    {
+                        data: 'birthDate',
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD');
+                        }
+                    },
+                    {
+                        "data": 'address'
+                    },
+                    { "data": 'email' },
+                    {
+                        data: 'joinDate',
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD');
+                        }
+                    },
+                    { "data": 'department.departmentName' },
+                    {
+                        "data": 'id',
+                        "render": function (data, type, row, meta) {
+                            return '<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Edit" onclick="Get(\'' + row['nik'] + '\')"><i class ="far fa-edit"></i> Edit</a> ' +
+                                '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete" onclick="Delete(\'' + row['nik'] + '\')"><i class ="far fa-trash-alt"></i> Delete</button>'
+                        }
+                    }
+                ]
+            });
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                    t.cell(cell).invalidate('dom');
+                });
+            }).draw();
+        });
+
+        $("#personForm").validate({
+                rules: {
+                    nik: {
+                        required: true
+                    },
+                    ktp: {
+                        required: true
+                    },
+                    firstName: {
+                        required: true
+                    },
+                    lastName: {
+                        required: true
+                    },
+                    phone: {
+                        required: true
+                    },
+                    birthDate: {
+                        required: true
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    address: {
+                        required: true
+                    },
+                    joinDate: {
+                        required: true
+                    },
+                    department: {
+                        required: true
+                    },
+                },
+                submitHandler: function (personForm) {
+                    var form = $(personForm);
+                    var urlString;
+                    if (isUpdate == 1)
+                        urlString = "person/put"
+                    else
+                        urlString = "person/post"
+                    $.ajax({
+                        type: "POST",
+                        url: urlString,
+                        data: form.serialize(),
+                        //"beforeSend": function (xhr) {
+                        //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                        //},
+                        success: function (data) {
+                            $('#modal').modal('hide');
+                            Swal.fire(
+                                    'Saved!',
+                                    'Your data has been saved.',
+                                    'success'
+                                )
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                        error: function (error) {
+                            alert('error;');
+                            $('#modal').modal('hide');
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                    });
+                }
+        });
+
+        function Get(nik) {
+                //debugger;
+                $.ajax({
+                    url: "Person/GetById",
+                    type: "GET",
+                    data: { 'key': nik },
+                    //"beforeSend": function (xhr) {
+                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    //},
+                    success: function (data) {
+                        $('#modal').modal('show');
+                        var result = (JSON.parse(JSON.stringify(data))).data;
+                        console.log(result);
+                        $('#nik').val(result.nik);
+                        //$('#ktp').val(data.ktp);
+                        //$('#firstName').val(data.firstName);
+                        //$('#lastName').val(data.lastName);
+                        //$('#phone').val(data.phone);
+                        //$('#birthDate').val(moment(data.birthDate).format('YYYY-MM-DD'));
+                        //$('#email').val(data.email);
+                        //$('#address').val(data.address);
+                        //$('#joinDate').val(data.joinDate);
+                        //$('#department').val(data.department.departmentName);
+                        isUpdate = 1;
+                    }
+                });
+        }
+
+        function resetUpdate() {
+            isUpdate = 0;
+            $('#personForm').trigger('reset');
+        }
+
+        function Delete(nik) {
+                swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "Person/Delete",
+                            data: { 'key': nik },
+                            //"beforeSend": function (xhr) {
+                            //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                            //},
+                            success: function (data) {
+                                 Swal.fire(
+                                    'Deleted!',
+                                    'Your data has been deleted.',
+                                    'success'
+                                )
+                                $('#table_id').DataTable().ajax.reload();
+                            },
+                            error: function (error) {
+                                alert('error;');
+                                $('#table_id').DataTable().ajax.reload();
+                            },
+                        });
+                    }
+                })
+        }
+    </script>
+}

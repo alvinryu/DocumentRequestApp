@@ -31,7 +31,7 @@ namespace API.Models
         public DateTime JoinDate { get; set; }
         [JsonIgnore]
         public virtual Account Account { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public virtual Department Department { get; set; }
         [JsonIgnore]
         public virtual ICollection<Request> Requests { get; set; }
