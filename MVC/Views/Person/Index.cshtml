@@ -12,7 +12,7 @@
         </h2>
     </div>
     <div>
-        <button class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
+        <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
             <i class="fas fa-user-plus"></i> Add
         </button>
     </div>
@@ -98,7 +98,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="address" class="col-form-label">Address:</label>
-                                <textarea id="address" name="address"></textarea>
+                                <textarea class="form-control" id="address" name="address"></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="joinDate" class="col-form-label">Join Date:</label>
@@ -106,7 +106,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="department" class="col-form-label">Department:</label>
-                                <input type="text" class="form-control" id="department" name="department">
+                                <select class="form-control" id="department" name="department">
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -125,6 +126,7 @@
     <script>
         var isUpdate = 0;
         $(document).ready(function () {
+            GetAllDepartment();
             var isUpdate = 0;
             var t = $('#table_id').DataTable({
                 dom: 'Bfrtip',
@@ -302,6 +304,28 @@
                 }
         });
 
+        function GetAllDepartment() {
+            $.ajax({
+                    url: "Department/Get",
+                    type: "GET",
+                    success: function (data) {
+                        var result = (JSON.parse(JSON.stringify(data))).data;
+                        const dataDepartmentName = new Map();
+                        result.map(x => {
+                            dataDepartmentName.set(x.departmentID, x.departmentName);
+                        });
+                        dataDepartmentName.forEach((value, key) => {
+                            $('#department').append(
+                                $('<option></option>').val(key).html(value)
+                            );
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+            });
+        }
+
         function Get(nik) {
                 //debugger;
                 $.ajax({
@@ -314,17 +338,16 @@
                     success: function (data) {
                         $('#modal').modal('show');
                         var result = (JSON.parse(JSON.stringify(data))).data;
-                        console.log(result);
                         $('#nik').val(result.nik);
-                        //$('#ktp').val(data.ktp);
-                        //$('#firstName').val(data.firstName);
-                        //$('#lastName').val(data.lastName);
-                        //$('#phone').val(data.phone);
-                        //$('#birthDate').val(moment(data.birthDate).format('YYYY-MM-DD'));
-                        //$('#email').val(data.email);
-                        //$('#address').val(data.address);
-                        //$('#joinDate').val(data.joinDate);
-                        //$('#department').val(data.department.departmentName);
+                        $('#ktp').val(result.ktp);
+                        $('#firstName').val(result.firstName);
+                        $('#lastName').val(result.lastName);
+                        $('#phone').val(result.phone);
+                        $('#birthDate').val(moment(result.birthDate).format('YYYY-MM-DD'));
+                        $('#email').val(result.email);
+                        $('#address').val(result.address);
+                        $('#joinDate').val(result.joinDate);
+                        $('#department').val(result.department.departmentID);
                         isUpdate = 1;
                     }
                 });
