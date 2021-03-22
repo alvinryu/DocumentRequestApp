@@ -29,6 +29,8 @@ namespace API.Models
         public string Address { get; set; }
         [Required] 
         public DateTime JoinDate { get; set; }
+        [Required]
+        public int DepartmentID { get; set; }
         [JsonIgnore]
         public virtual Account Account { get; set; }
         //[JsonIgnore]

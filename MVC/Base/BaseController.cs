@@ -33,7 +33,7 @@ namespace MVC.Base
 
             using var response = await httpClient.GetAsync(typeof(Entity).Name);
             string apiResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ResponseVM<Entity>>(apiResponse);
+            var result = JsonConvert.DeserializeObject<ResponseVM<IEnumerable<Entity>>>(apiResponse);
             return new JsonResult(result);
         }
 
