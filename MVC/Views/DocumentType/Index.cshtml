@@ -1,18 +1,18 @@
 ﻿@{
     Layout = "_Layout";
-    ViewData["Title"] = "Role";
+    ViewData["Title"] = "Document Type";
 }
 
 <div class="p-3">
     <div class="row">
         <h2 class="page-header">
             Data
-            <small>Role</small>
+            <small>Document Type</small>
         </h2>
     </div>
     <div>
         <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
-            <i class="fas fa-user-plus"></i> Add Role
+            <i class="fas fa-user-plus"></i> Add Document Type
         </button>
     </div>
     <div>
@@ -20,8 +20,8 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Role ID</th>
-                    <th>Role Name</th>
+                    <th>Type ID</th>
+                    <th>Type Name</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -30,8 +30,8 @@
             <tfoot>
                 <tr>
                     <th>No</th>
-                    <th>Role ID</th>
-                    <th>Role Name</th>
+                    <th>Type ID</th>
+                    <th>Type Name</th>
                     <th>Actions</th>
                 </tr>
             </tfoot>
@@ -39,29 +39,29 @@
     </div>
 </div>
 
-<!-- Add/Edit  Role Modal-->
+<!-- Add/Edit DocumentType Modal-->
 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Department</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Document Type</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
             </div>
             <div class="modal-body">
-                <form id="roleForm" name="roleForm">
+                <form id="docTypeForm" name="docTypeForm">
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
                                 <span id="spanID"></span>
-                                <label for="roleName" class="col-form-label">Role Name:</label>
-                                <input type="text" class="form-control" id="roleName" name="roleName">
+                                <label for="typeName" class="col-form-label">Type Name:</label>
+                                <input type="text" class="form-control" id="typeName" name="typeName">
                             </div>
                         </div>
                     </div>
                 </form>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" form="roleForm">Submit</button>
+                    <button type="submit" class="btn btn-primary" form="docTypeForm">Submit</button>
                 </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
                 "filter": true,
                 "orderMulti": false,
                 "ajax": {
-                    "url": "Role/Get",
+                    "url": "DocumentType/Get",
                     "type": "get",
                     "data": "result",
                     "dataType": "json",
@@ -130,13 +130,13 @@
                         "data": 'id',
                         "defaultContent": ''
                     },
-                    { "data": 'roleID' },
-                    { "data": 'roleName' },
+                    { "data": 'typeID' },
+                    { "data": 'typeName' },
                     {
                         "data": 'id',
                         "render": function (data, type, row, meta) {
-                            return '<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Edit" onclick="Get(\'' + row['roleID'] + '\')"><i class ="far fa-edit"></i> Edit</a> ' +
-                                '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete" onclick="Delete(\'' + row['roleID'] + '\')"><i class ="far fa-trash-alt"></i> Delete</button>'
+                            return '<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Edit" onclick="Get(\'' + row['typeID'] + '\')"><i class ="far fa-edit"></i> Edit</a> ' +
+                                '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete" onclick="Delete(\'' + row['typeID'] + '\')"><i class ="far fa-trash-alt"></i> Delete</button>'
                         }
                     }
                 ]
@@ -149,19 +149,19 @@
             }).draw();
         });
 
-        $("#roleForm").validate({
+        $("#docTypeForm").validate({
             rules: {
-                roleName: {
+                typeName: {
                     required: true
                 }
             },
-            submitHandler: function (roleForm) {
-                var form = $(roleForm);
+            submitHandler: function (docTypeForm) {
+                var form = $(docTypeForm);
                 var urlString;
                 if (isUpdate == 1)
-                    urlString = "role/put"
+                    urlString = "documenttype/put"
                 else
-                    urlString = "role/post"
+                    urlString = "documenttype/post"
                 $.ajax({
                     type: "POST",
                     url: urlString,
@@ -187,21 +187,21 @@
             }
         });
 
-        function Get(roleID) {
+        function Get(typeID) {
             //debugger;
-            $("#spanID").append("<input type='hidden' id='roleID' name='roleID' />");
+            $("#spanID").append("<input type='hidden' id='typeID' name='typeID' />");
             $.ajax({
-                url: "Role/GetById",
+                url: "documenttype/GetById",
                 type: "GET",
-                data: { 'key': roleID },
+                data: { 'key': typeID },
                 //"beforeSend": function (xhr) {
                 //    xhr.setRequestHeader('Authorization', sessionStorage.token);
                 //},
                 success: function (data) {
                     $('#modal').modal('show');
                     var result = (JSON.parse(JSON.stringify(data))).data;
-                    $('#roleID').val(result.roleID);
-                    $('#roleName').val(result.roleName);
+                    $('#typeID').val(result.typeID);
+                    $('#typeName').val(result.typeName);
                     isUpdate = 1;
                 }
             });
@@ -210,10 +210,10 @@
         function resetUpdate() {
             isUpdate = 0;
             $("#spanID").empty();
-            $('#roleForm').trigger('reset');
+            $('#docTypeForm').trigger('reset');
         }
 
-        function Delete(roleID) {
+        function Delete(typeID) {
             swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -226,8 +226,8 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: "Role/Delete",
-                        data: { 'key': roleID },
+                        url: "documenttype/Delete",
+                        data: { 'key': typeID },
                         //"beforeSend": function (xhr) {
                         //    xhr.setRequestHeader('Authorization', sessionStorage.token);
                         //},
