@@ -105,8 +105,8 @@
                                 <input type="date" class="form-control" id="joinDate" name="joinDate">
                             </div>
                             <div class="form-group">
-                                <label for="department" class="col-form-label">Department:</label>
-                                <select class="form-control" id="department" name="department">
+                                <label for="departmentID" class="col-form-label">Department:</label>
+                                <select class="form-control" id="departmentID" name="departmentID">
                                 </select>
                             </div>
                         </div>
@@ -268,7 +268,7 @@
                     joinDate: {
                         required: true
                     },
-                    department: {
+                    departmentID: {
                         required: true
                     },
                 },
@@ -315,7 +315,7 @@
                             dataDepartmentName.set(x.departmentID, x.departmentName);
                         });
                         dataDepartmentName.forEach((value, key) => {
-                            $('#department').append(
+                            $('#departmentID').append(
                                 $('<option></option>').val(key).html(value)
                             );
                         });
@@ -346,8 +346,8 @@
                         $('#birthDate').val(moment(result.birthDate).format('YYYY-MM-DD'));
                         $('#email').val(result.email);
                         $('#address').val(result.address);
-                        $('#joinDate').val(result.joinDate);
-                        $('#department').val(result.department.departmentID);
+                        $('#joinDate').val(moment(result.birthDate).format('YYYY-MM-DD'));
+                        $('#departmentID').val(result.department.departmentID);
                         isUpdate = 1;
                     }
                 });
