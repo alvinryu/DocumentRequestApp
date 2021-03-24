@@ -112,7 +112,7 @@
                                 <input type="date" class="form-control" id="joinDate" name="joinDate">
                             </div>
                             <div class="form-group">
-                                <label for="department" class="col-form-label">Department:</label>
+                                <label for="departmentID" class="col-form-label">Department:</label>
                                 <select class="form-control" id="departmentID" name="departmentID">
                                 </select>
                             </div>
@@ -140,6 +140,7 @@
         var isUpdateAccount = 0;
         var isUpdateAccountRole = 0;
         $(document).ready(function () {
+            //GetAllDepartment();
             var isUpdate = 0;
             var t = $('#table_id').DataTable({
                 "filter": true,

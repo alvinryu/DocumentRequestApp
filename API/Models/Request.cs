@@ -23,7 +23,7 @@ namespace API.Models
         public virtual Person Person { get; set; }
         [JsonIgnore]
         public virtual DetailRequest DetailRequest { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public virtual DocumentType DocumentType { get; set; }
     }
 }
