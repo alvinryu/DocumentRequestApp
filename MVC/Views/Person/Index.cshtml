@@ -5,7 +5,7 @@
 }
 
 <div class="p-3">
-    <div class="row">
+    <div>
         <h2 class="page-header">
             Data
             <small>Person</small>
@@ -52,11 +52,18 @@
             </tfoot>
         </table>
     </div>
+
+    <div class="container mt-3" style="max-width: 75%;">
+        <div class="row">
+            <div id="chart1" class="col-6"></div>
+            <div id="chart2" class="col-6"></div>
+        </div>
+    </div>
 </div>
 
 <!-- Add Person Modal-->
 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Person</h5>
@@ -109,6 +116,11 @@
                                 <select class="form-control" id="departmentID" name="departmentID">
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="role" class="col-form-label">Role:</label>
+                                <select class="form-control" id="roleID" name="roleID">
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -125,6 +137,8 @@
 {
     <script>
         var isUpdate = 0;
+        var isUpdateAccount = 0;
+        var isUpdateAccountRole = 0;
         $(document).ready(function () {
             var isUpdate = 0;
             var t = $('#table_id').DataTable({
@@ -286,13 +300,22 @@
                     //    xhr.setRequestHeader('Authorization', sessionStorage.token);
                     //},
                     success: function (data) {
+                        console.log(data);
                         $('#modal').modal('hide');
+                        if (isUpdate == 1) {
+                            manageAccountRole(isUpdateAccountRole, $("#modal").find('#nik').val(), $("#modal").find('#roleID').val());
+                        }
+                        else {
+                            manageAccount(isUpdateAccount, $("#modal").find('#nik').val());
+                            manageAccountRole(isUpdateAccountRole, $("#modal").find('#nik').val(), $("#modal").find('#roleID').val());
+                        }
                         Swal.fire(
                             'Saved!',
                             'Your data has been saved.',
                             'success'
                         )
                         $('#table_id').DataTable().ajax.reload();
+                        updateChart();
                     },
                     error: function (error) {
                         alert('error;');
@@ -309,6 +332,7 @@
                 url: "Department/Get",
                 type: "GET",
                 success: function (data) {
+                    console.log(data);
                     var result = (JSON.parse(JSON.stringify(data))).data;
                     const dataDepartmentName = new Map();
                     result.map(x => {
@@ -333,6 +357,37 @@
             });
         }
 
+        function GetAllRole(role = null) {
+            $('#roleID').html('');
+            $.ajax({
+                url: "Role/Get",
+                type: "GET",
+                success: function (data) {
+                    console.log(data);
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+                    const dataRoleName = new Map();
+                    result.map(x => {
+                        dataRoleName.set(x.roleID, x.roleName);
+                    });
+                    dataRoleName.forEach((value, key) => {
+                        if (key == role) {
+                            $('#roleID').append(
+                                $('<option selected></option>').val(key).html(value)
+                            );
+                        }
+                        else {
+                            $('#roleID').append(
+                                $('<option></option>').val(key).html(value)
+                            );
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        }
+
         function Get(nik) {
             //debugger;
             $.ajax({
@@ -343,6 +398,8 @@
                 //    xhr.setRequestHeader('Authorization', sessionStorage.token);
                 //},
                 success: function (data) {
+                    console.log(data);
+
                     $('#modal').modal('show');
                     var result = (JSON.parse(JSON.stringify(data))).data;
 
@@ -355,17 +412,22 @@
                     $('#email').val(result.email);
                     $('#address').val(result.address);
                     $('#joinDate').val(moment(result.joinDate).format('YYYY-MM-DD'));
-                    $('#departmentID').val(result.department.departmentID);
+
                     GetAllDepartment(result.department.departmentID);
+                    GetAllRole(result.account.accountRoles[0].roleID);
                     isUpdate = 1;
+                    isUpdateAccountRole = 1;
                 }
             });
         }
 
         function resetUpdate() {
             isUpdate = 0;
+            isUpdateAccount = 0;
+            isUpdateAccountRole = 0;
             $('#personForm').trigger('reset');
             GetAllDepartment();
+            GetAllRole();
         }
 
         function Delete(nik) {
@@ -387,12 +449,14 @@
                         //    xhr.setRequestHeader('Authorization', sessionStorage.token);
                         //},
                         success: function (data) {
+                            console.log(data);
                             Swal.fire(
                                 'Deleted!',
-                                'Your data has been deleted.',
+                                'Data with NIK :' + nik + ' data has been deleted.',
                                 'success'
                             )
                             $('#table_id').DataTable().ajax.reload();
+                            updateChart();
                         },
                         error: function (error) {
                             alert('error;');
@@ -403,24 +467,137 @@
             })
         }
 
-        function addAccount(nik = null) {
-            var arr = { "NIK": nik, "Password": "default" };
-            var json = (JSON.stringify(arr));
-            console.log(json);
-
+        function manageAccount(isUpdateAccount, nik) {
+            var urlString;
+            if (isUpdateAccount == 1)
+                urlString = "account/put"
+            else
+                urlString = "account/post"
             $.ajax({
-                url: "Account/Post",
+                url: urlString,
                 type: "POST",
-                data: json,
+                data: "nik=" + nik + "&password=default",
                 //"beforeSend": function (xhr) {
                 //    xhr.setRequestHeader('Authorization', sessionStorage.token);
                 //},
                 success: function (data) {
-                    console.log('insert!');
+                    console.log(data);
+                    console.log('account updated!');
                 }
             });
         }
 
-        addAccount();
+        function manageAccountRole(isUpdateAccountRole, nik, roleID) {
+            var urlString;
+            if (isUpdateAccountRole == 1)
+                urlString = "accountrole/UpdateAccountRole"
+            else
+                urlString = "accountrole/post"
+            $.ajax({
+                url: urlString,
+                type: "POST",
+                data: "nik=" + nik + "&roleID=" + roleID,
+                //"beforeSend": function (xhr) {
+                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                //},
+                success: function (data) {
+                    console.log(data);
+                    console.log('accountrole updated!');
+                }
+            });
+        }
+
+        var options = {
+            chart: {
+                height: 350,
+                type: 'bar',
+            },
+            dataLabels: {
+                enabled: false
+            },
+            series: [],
+            title: {
+                text: 'Employee"s Role Chart',
+            },
+            noData: {
+                text: 'Loading...'
+            }
+        }
+
+        var chart = new ApexCharts(
+            document.querySelector("#chart1"),
+            options
+        );
+
+        var options2 = {
+            chart: {
+                height: 350,
+                type: 'bar',
+            },
+            dataLabels: {
+                enabled: false
+            },
+            series: [],
+            title: {
+                text: 'Request"s DocumentType Chart',
+            },
+            noData: {
+                text: 'Loading...'
+            }
+        }
+
+        var chart2 = new ApexCharts(
+            document.querySelector("#chart2"),
+            options2
+        );
+
+        chart.render();
+        chart2.render();
+
+        updateChart();
+
+        function updateChart() {
+            $.ajax({
+                url: "Dashboard/ChartRole",
+                type: "GET",
+                //"beforeSend": function (xhr) {
+                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                //},
+                success: function (result) {
+                    let resp = result.data;
+                    for (var i = 0; i < resp.length; i++) {
+                        resp[i].x = resp[i].type;
+                        resp[i].y = resp[i].total;
+                        delete resp[i].type;
+                        delete resp[i].total;
+                    }
+                    chart.updateSeries([{
+                        name: 'Role',
+                        data: resp
+                    }])
+                }
+            });
+
+            $.ajax({
+                url: "Dashboard/ChartDocType",
+                type: "GET",
+                //"beforeSend": function (xhr) {
+                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                //},
+                success: function (result) {
+                    let resp = result.data;
+                    for (var i = 0; i < resp.length; i++) {
+                        resp[i].x = resp[i].type;
+                        resp[i].y = resp[i].total;
+                        delete resp[i].type;
+                        delete resp[i].total;
+                    }
+                    chart2.updateSeries([{
+                        name: 'DocumentType',
+                        data: resp
+                    }])
+                }
+            });
+        }
     </script>
 }

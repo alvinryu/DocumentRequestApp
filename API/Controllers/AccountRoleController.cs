@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using API.Base.Controller;
 using API.Models;
@@ -15,12 +16,26 @@ namespace API.Controllers
     [ApiController]
     public class AccountRoleController : BaseController<AccountRole, AccountRoleRepository, string>
     {
-        private readonly AccountRoleRepository _accountRoleController;
+        private readonly AccountRoleRepository _accountRoleRepository;
         private readonly IConfiguration _configuration;
-        public AccountRoleController(AccountRoleRepository accountRoleController, IConfiguration configuration) : base(accountRoleController)
+        public AccountRoleController(AccountRoleRepository accountRoleRepository, IConfiguration configuration) : base(accountRoleRepository)
         {
-            _accountRoleController = accountRoleController;
+            _accountRoleRepository = accountRoleRepository;
             _configuration = configuration;
+        }
+
+        [HttpPost("UpdateAccountRole")]
+        public IActionResult UpdateAccountRole(AccountRole accountRole)
+        {
+            var result = _accountRoleRepository.UpdateAccountRole(accountRole);
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, Message = "You have successfully Update AccountRole", data = "" });
+            }
+            else
+            {
+                return new OkObjectResult(new { Status = HttpStatusCode.Unauthorized, ErrorMessage = "Unauthorized Access" });
+            }
         }
     }
 }

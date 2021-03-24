@@ -8,7 +8,7 @@ namespace API.ViewModels
 {
     public class SendEmailVM
     {
-        [Required]
+        //[Required]
         public string NIK { get; set; }
         [DataType(DataType.EmailAddress)]
         [Required]

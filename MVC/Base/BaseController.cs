@@ -13,7 +13,7 @@ namespace MVC.Base
 {
     public class BaseController<Entity, Key> : Controller
     {
-        private readonly HttpClient httpClient;
+        protected readonly HttpClient httpClient;
 
         public BaseController()
         {
@@ -75,7 +75,7 @@ namespace MVC.Base
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(Key key)
+        public async Task<JsonResult> Delete(Key key)
         {
             //var header = Request.Headers["Authorization"];
             //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);

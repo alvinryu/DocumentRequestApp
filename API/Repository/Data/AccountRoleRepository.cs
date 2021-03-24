@@ -18,5 +18,15 @@ namespace API.Repository.Data
         {
             _configuration = configuration;
         }
+
+        public AccountRole UpdateAccountRole(AccountRole accountRole)
+        {
+            var _accountRoleRepository = new GeneralDapperRepository<AccountRole>(_configuration);
+
+            _parameters.Add("@NIK", accountRole.NIK);
+            _parameters.Add("@RoleID", accountRole.RoleID);
+            var result = _accountRoleRepository.Query("SP_UpdateAccountRole", _parameters);
+            return result;
+        }
     }
 }

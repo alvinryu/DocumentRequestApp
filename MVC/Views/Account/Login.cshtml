@@ -4,7 +4,7 @@
     ViewBag.Title = "Login";
 }
 
-<h1 class="text-center">Welcome Back!</h1>
+<h1 class="text-center mt-5">Welcome Back!</h1>
 
 <div class="row  justify-content-center align-items-center">
     <div class="col-md-4">
@@ -22,7 +22,7 @@
             </div>
         </form>
         <div class="form-group mt-2">
-            <button class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
+            <button class="mb-3 btn btn-secondary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
                 Forgot Password
             </button>
         </div>
@@ -35,7 +35,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Forgot Password</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
             </div>
             <div class="modal-body">
                 <form id="forgotForm" name="forgotForm">
@@ -86,16 +86,16 @@
                             } else {
                                 Swal.fire(
                                     'Failed',
-                                    'Username or Password incorrect',
+                                    'Email or Password incorrect',
                                     'error'
                                 )
                             }
                         },
                         error: function (error) {
                             Swal.fire(
-                                    'Failed',
-                                    'Username or Password incorrect',
-                                    'error'
+                                'Failed',
+                                'Email or Password incorrect',
+                                'error'
                             )
                         },
                     });
@@ -111,31 +111,36 @@
                 },
                 submitHandler: function (forgotForm) {
                     var form = $(forgotForm);
-                    var urlString;
-                    if (isUpdate == 1)
-                        urlString = "person/put"
-                    else
-                        urlString = "person/post"
                     $.ajax({
                         type: "POST",
-                        url: urlString,
-                        data: form.serialize(),
-                        "beforeSend": function (xhr) {
-                            xhr.setRequestHeader('Authorization', sessionStorage.token);
-                        },
+                        url: "ForgotPassword",
+                        data: (form.serialize()).replace("emailForgot","email"),
+                        //"beforeSend": function (xhr) {
+                        //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                        //},
                         success: function (data) {
-                            $('#modal').modal('hide');
-                            Swal.fire(
+                            if (data == "200") {
+                                $('#modal').modal('hide');
+                                Swal.fire(
                                     'Saved!',
-                                    'Your data has been saved.',
+                                    'Temporary Password is sent to your email!',
                                     'success'
                                 )
-                            $('#table_id').DataTable().ajax.reload();
+                            } else {
+                                Swal.fire(
+                                    'Failed',
+                                    'Email doesnt exist!',
+                                    'error'
+                                )
+                            }
                         },
                         error: function (error) {
-                            alert('error;');
+                            Swal.fire(
+                                'Failed',
+                                error,
+                                'error'
+                            )
                             $('#modal').modal('hide');
-                            $('#table_id').DataTable().ajax.reload();
                         },
                     });
                 }

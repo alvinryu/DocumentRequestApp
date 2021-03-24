@@ -17,7 +17,7 @@ namespace API.Models
         public string Password { get; set; }
         [JsonIgnore]
         public virtual Person Person { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public virtual ICollection<AccountRole> AccountRoles { get; set; }
     }
 }
