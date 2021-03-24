@@ -15,7 +15,7 @@ namespace API.Base.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BaseController<Entity, Repository, Key> : ControllerBase
         where Entity : class
         where Repository : IRepository<Entity, Key>

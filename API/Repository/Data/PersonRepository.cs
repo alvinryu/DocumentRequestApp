@@ -27,5 +27,14 @@ namespace API.Repository.Data
             var result = _personRepository.Query("SP_GetPersonByEmail", _parameters);
             return result;
         }
+
+        public Person CheckKTP(string KTP)
+        {
+            var _personRepository = new GeneralDapperRepository<Person>(_configuration);
+
+            _parameters.Add("@KTP", KTP);
+            var result = _personRepository.Query("SP_GetPersonByKTP", _parameters);
+            return result;
+        }
     }
 }

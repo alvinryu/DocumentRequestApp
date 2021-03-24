@@ -78,6 +78,11 @@
 {
     <script>
         var isUpdate = 0;
+
+        if (sessionStorage.getItem("token") == null) {
+            window.location.href = "/Account/Login";
+        }
+
         $(document).ready(function () {
             var t = $('#table_id').DataTable({
                 dom: 'Bfrtip',
@@ -116,9 +121,9 @@
                     "type": "get",
                     "data": "result",
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    }
                 },
                 "columnDefs": [
                     {
@@ -138,7 +143,7 @@
                     },
                     { "data": 'departmentID' },
                     { "data": 'departmentName' },
-                    { "data": 'manager_NIK'},
+                    { "data": 'manager_NIK' },
                     {
                         "data": 'id',
                         "render": function (data, type, row, meta) {
@@ -157,65 +162,65 @@
         });
 
         $("#departmentForm").validate({
-                rules: {
-                    departmentName: {
-                        required: true
-                    },
-                    manager_NIK: {
-                        required: true
-                    }
+            rules: {
+                departmentName: {
+                    required: true
                 },
+                manager_NIK: {
+                    required: true
+                }
+            },
             submitHandler: function (departmentForm) {
-                    var form = $(departmentForm);
-                    var urlString;
-                    if (isUpdate == 1) 
-                        urlString = "department/put"
-                    else
-                        urlString = "department/post"
-                    $.ajax({
-                        type: "POST",
-                        url: urlString,
-                        data: form.serialize(),
-                        //"beforeSend": function (xhr) {
-                        //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                        //},
-                        success: function (data) {
-                            $('#modal').modal('hide');
-                            Swal.fire(
-                                    'Saved!',
-                                    'Your data has been saved.',
-                                    'success'
-                                )
-                            $('#table_id').DataTable().ajax.reload();
-                        },
-                        error: function (error) {
-                            alert('error;');
-                            $('#modal').modal('hide');
-                            $('#table_id').DataTable().ajax.reload();
-                        },
-                    });
+                var form = $(departmentForm);
+                var urlString;
+                if (isUpdate == 1)
+                    urlString = "department/put"
+                else
+                    urlString = "department/post"
+                $.ajax({
+                    type: "POST",
+                    url: urlString,
+                    data: form.serialize(),
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
+                    success: function (data) {
+                        $('#modal').modal('hide');
+                        Swal.fire(
+                            'Saved!',
+                            'Your data has been saved.',
+                            'success'
+                        )
+                        $('#table_id').DataTable().ajax.reload();
+                    },
+                    error: function (error) {
+                        alert('error;');
+                        $('#modal').modal('hide');
+                        $('#table_id').DataTable().ajax.reload();
+                    },
+                });
             }
         });
 
         function Get(departmentID) {
-                //debugger;
-                $("#spanID").append("<input type='hidden' id='departmentID' name='departmentID' />"); 
-                $.ajax({
-                    url: "Department/GetById",
-                    type: "GET",
-                    data: { 'key': departmentID },
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //},
-                    success: function (data) {
-                        $('#modal').modal('show');
-                        var result = (JSON.parse(JSON.stringify(data))).data;
-                        $('#departmentID').val(result.departmentID);
-                        $('#departmentName').val(result.departmentName);
-                        $('#manager_NIK').val(result.manager_NIK);
-                        isUpdate = 1;
-                    }
-                });
+            //debugger;
+            $("#spanID").append("<input type='hidden' id='departmentID' name='departmentID' />");
+            $.ajax({
+                url: "Department/GetById",
+                type: "GET",
+                data: { 'key': departmentID },
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    $('#modal').modal('show');
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+                    $('#departmentID').val(result.departmentID);
+                    $('#departmentName').val(result.departmentName);
+                    $('#manager_NIK').val(result.manager_NIK);
+                    isUpdate = 1;
+                }
+            });
         }
 
         function resetUpdate() {
@@ -225,38 +230,38 @@
         }
 
         function Delete(departmentID) {
-                swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "POST",
-                            url: "Department/Delete",
-                            data: { 'key': departmentID },
-                            //"beforeSend": function (xhr) {
-                            //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                            //},
-                            success: function (data) {
-                                 Swal.fire(
-                                    'Deleted!',
-                                    'Your data has been deleted.',
-                                    'success'
-                                )
-                                $('#table_id').DataTable().ajax.reload();
-                            },
-                            error: function (error) {
-                                alert('error;');
-                                $('#table_id').DataTable().ajax.reload();
-                            },
-                        });
-                    }
-                })
+            swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "Department/Delete",
+                        data: { 'key': departmentID },
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        },
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your data has been deleted.',
+                                'success'
+                            )
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                        error: function (error) {
+                            alert('error;');
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                    });
+                }
+            })
         }
     </script>
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -25,8 +26,8 @@ namespace MVC.Controllers
 
         public async Task<JsonResult> ChartRole()
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             using var response = await httpClient.GetAsync("Dashboard/ChartRole");
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -36,8 +37,8 @@ namespace MVC.Controllers
 
         public async Task<JsonResult> ChartDocType()
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             using var response = await httpClient.GetAsync("Dashboard/ChartDocType");
             string apiResponse = await response.Content.ReadAsStringAsync();

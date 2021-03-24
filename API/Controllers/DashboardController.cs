@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using API.Repository.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,7 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
+        [Authorize]
         [HttpGet("ChartRole")]
         public IActionResult ChartRole()
         {
@@ -38,6 +40,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("ChartDocType")]
         public IActionResult ChartDocType()
         {
