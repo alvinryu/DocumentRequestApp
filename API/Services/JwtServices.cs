@@ -30,6 +30,7 @@ namespace API.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
+                    new Claim("nik", loginVM.NIK),
                     new Claim(ClaimTypes.Email, loginVM.Email),
                     new Claim(ClaimTypes.Name, loginVM.FullName),
                     new Claim(ClaimTypes.Role, loginVM.RoleName)

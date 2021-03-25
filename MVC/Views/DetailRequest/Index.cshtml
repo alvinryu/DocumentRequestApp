@@ -102,10 +102,6 @@
     <script>
         var isUpdate = 0;
 
-        if (sessionStorage.getItem("token") == null) {
-            window.location.href = "/Account/Login";
-        } 
-
         $(document).ready(function () {
             var isUpdate = 0;
             var t = $('#table_id').DataTable({

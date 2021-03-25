@@ -35,9 +35,9 @@ namespace MVC.Controllers
             {
                 var password = Guid.NewGuid().ToString();
                 var _response = await Put(new Account { NIK = emailStatus.Data.NIK, Password = password });
-                var _apiResponse = JsonConvert.SerializeObject(_response.Value); 
+                var _apiResponse = JsonConvert.SerializeObject(_response.Value);
                 var _result = JsonConvert.DeserializeObject<ResponseVM<SendEmailVM>>(_apiResponse);
-                
+
                 if (_result.Status == "200")
                 {
                     var mailSubject = "Forgot Password Notification";
@@ -70,8 +70,34 @@ namespace MVC.Controllers
             return result;
         }
 
+        public ViewResult ChangePassword() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM changePassword)
+        {
+            var _response = await GetById(changePassword.NIK);
+            var _apiResponse = JsonConvert.SerializeObject(_response.Value);
+            var _result = JsonConvert.DeserializeObject<ResponseVM<Account>>(_apiResponse);
+            var result = new ResponseVM<Account>();
+
+            if (_result.Data.Password == changePassword.OldPassword)
+            {
+                var updateAccount = new LoginVM { NIK = changePassword.NIK, Password = changePassword.NewPassword };
+
+                StringContent content = new StringContent(JsonConvert.SerializeObject(updateAccount), Encoding.UTF8, "application/json");
+                var response = await httpClient.PutAsync("Account", content);
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                result = JsonConvert.DeserializeObject<ResponseVM<Account>>(apiResponse);
+            }
+            else
+            {
+                result.Status = "500";
+            }
+
+            return new JsonResult(result);
+        }
+
         //public ViewResult ForgotPassword() => View();
 
-        //public ViewResult Register() => View();
     }
 }

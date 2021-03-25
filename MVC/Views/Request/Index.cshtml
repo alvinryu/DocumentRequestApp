@@ -86,10 +86,6 @@
     <script>
         var isUpdate = 0;
 
-        if (sessionStorage.getItem("token") == null) {
-            window.location.href = "/Account/Login";
-        }
-
         $(document).ready(function () {
             GetAllDocumentType();
             var t = $('#table_id').DataTable({
@@ -219,6 +215,9 @@
             $.ajax({
                 url: "DocumentType/Get",
                 type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
                     var result = (JSON.parse(JSON.stringify(data))).data;
                     const dataDocumentType = new Map();

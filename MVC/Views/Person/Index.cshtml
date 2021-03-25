@@ -5,17 +5,10 @@
 }
 
 <div class="p-3">
-    <div class="row">
-        <div class="col-10">
-            <h2 class="page-header">
-                Data
-                <small>Person</small>
-            </h2>
-        </div>
-        <div class="col-2">
-            <button id="logout" class="btn btn-secondary text-center" style="position: absolute;right: 0;" onclick="logOut()">Logout</button>
-        </div>
-    </div>
+    <h2 class="page-header">
+        Data
+        <small>Person</small>
+    </h2>
     <div>
         <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
             <i class="fas fa-user-plus"></i> Add
@@ -147,14 +140,6 @@
         var isUpdate = 0;
         var isUpdateAccount = 0;
         var isUpdateAccountRole = 0;
-
-        if (sessionStorage.getItem("token") == null) {
-            window.location.href = "/Account/Login";
-        } else {
-            var token = sessionStorage.getItem("token");
-            var jsontoken = JSON.parse(atob(token.split('.')[1]));
-            sessionStorage.setItem("role", jsontoken.role);
-        }
 
         $(document).ready(function () {
             //GetAllDepartment();
@@ -693,11 +678,6 @@
                     }])
                 }
             });
-        }
-
-        function logOut() {
-            sessionStorage.setItem("token", "");
-            window.location.href = "/Account/Login";
         }
     </script>
 }
