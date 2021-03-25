@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using API.Models;
@@ -30,7 +31,7 @@ namespace MVC.Controllers
         public async Task<string> ForgotPassword(string Email)
         {
             var emailStatus = await CheckPersonByEmail(Email);
-            var statusCode = emailStatus.Status;
+            string statusCode = "";
             if (emailStatus.Status == "200")
             {
                 var password = Guid.NewGuid().ToString();
@@ -42,14 +43,10 @@ namespace MVC.Controllers
                 {
                     var mailSubject = "Forgot Password Notification";
                     var mailBody = "<h2>Your Password was changed!</h2> Use this temporary password to login : " + password + "<br><br>We recommend you to change the temporary password in HRIS immediately";
-
                     var sendEmailVM = new SendEmailVM { Email = Email, MessageSubject = mailSubject, MessageBody = mailBody };
 
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(sendEmailVM), Encoding.UTF8, "application/json");
-                    var response = await httpClient.PostAsync("Account/SendEmail", content);
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<ResponseVM<SendEmailVM>>(apiResponse);
-                    statusCode = result.Status;
+                    var sendEmailResult = await SendEmail(sendEmailVM);
+                    statusCode = sendEmailResult.Status;
                 }
                 else
                 {
@@ -92,6 +89,36 @@ namespace MVC.Controllers
             else
             {
                 result.Status = "500";
+            }
+
+            return new JsonResult(result);
+        }
+
+        [HttpPost]
+        public async override Task<JsonResult> Post(Account account)
+        {
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+
+            account.Password = Guid.NewGuid().ToString();
+            StringContent content = new StringContent(JsonConvert.SerializeObject(account), Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync("Account", content);
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<Account>>(apiResponse);
+
+            if (result.Status == "200")
+            {
+                var _response = await httpClient.GetAsync("Person/" + account.NIK);
+                string _apiResponse = await _response.Content.ReadAsStringAsync();
+                var _result = JsonConvert.DeserializeObject<ResponseVM<Person>>(_apiResponse);
+
+                var password = account.Password;
+                var mailSubject = "New Account Notification";
+                var mailBody = "<h2>This email has been registered by our HR Division!</h2> Use this temporary password to login : " + password + "<br><br>We recommend you to change the temporary password in HRIS immediately";
+                var sendEmailVM = new SendEmailVM { Email = _result.Data.Email, MessageSubject = mailSubject, MessageBody = mailBody };
+
+                var sendEmailResult = await SendEmail(sendEmailVM);
+                result.Status = sendEmailResult.Status;
             }
 
             return new JsonResult(result);

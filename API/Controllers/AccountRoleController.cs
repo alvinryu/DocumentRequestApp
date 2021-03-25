@@ -15,6 +15,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "HR")]
     public class AccountRoleController : BaseController<AccountRole, AccountRoleRepository, string>
     {
         private readonly AccountRoleRepository _accountRoleRepository;
@@ -26,7 +27,6 @@ namespace API.Controllers
         }
 
         [HttpPost("UpdateAccountRole")]
-        [Authorize]
         public IActionResult UpdateAccountRole(AccountRole accountRole)
         {
             var result = _accountRoleRepository.UpdateAccountRole(accountRole);

@@ -84,7 +84,7 @@ namespace API.Base.Controller
         }
 
         [HttpPut]
-        public ActionResult Put(Entity entity)
+        public virtual ActionResult Put(Entity entity)
         {
             if (entity == null)
             {

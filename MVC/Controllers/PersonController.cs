@@ -20,6 +20,8 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> CheckPersonByEmail(string Email)
         {
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
             StringContent content = new StringContent(JsonConvert.SerializeObject(Email), Encoding.UTF8, "application/json");
 
             using var response = await httpClient.PostAsync("Person/CheckEmail/?Email=" + Email, content);

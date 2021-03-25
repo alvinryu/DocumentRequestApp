@@ -13,6 +13,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "HR")]
     public class DashboardController : ControllerBase
     {
         private readonly DashboardRepository _dashboardRepository;
@@ -24,7 +25,6 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
-        [Authorize]
         [HttpGet("ChartRole")]
         public IActionResult ChartRole()
         {
@@ -40,7 +40,6 @@ namespace API.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("ChartDocType")]
         public IActionResult ChartDocType()
         {

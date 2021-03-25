@@ -49,7 +49,7 @@ namespace MVC.Base
         }
 
         [HttpPost]
-        public async Task<JsonResult> Post(Entity entity)
+        public async virtual Task<JsonResult> Post(Entity entity)
         {
             var header = Request.Headers["Authorization"];
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
@@ -84,6 +84,19 @@ namespace MVC.Base
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<Entity>>(apiResponse);
             return new JsonResult(result);
+        }
+
+        public async Task<ResponseVM<SendEmailVM>> SendEmail(SendEmailVM sendEmailVM)
+        {
+            //var mailSubject = "Forgot Password Notification";
+            //var mailBody = "<h2>Your Password was changed!</h2> Use this temporary password to login : " + password + "<br><br>We recommend you to change the temporary password in HRIS immediately";
+            //var sendEmailVM = new SendEmailVM { Email = Email, MessageSubject = mailSubject, MessageBody = mailBody };
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(sendEmailVM), Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync(typeof(Entity).Name + "/SendEmail", content);
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<SendEmailVM>>(apiResponse);
+            return result;
         }
     }
 }

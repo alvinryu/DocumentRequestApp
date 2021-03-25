@@ -15,6 +15,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PersonController : BaseController<Person, PersonRepository, string>
     {
         private readonly PersonRepository _personRepository;
