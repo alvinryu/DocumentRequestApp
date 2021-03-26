@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using API.Base.Controller;
 using API.Models;
@@ -23,6 +24,22 @@ namespace API.Controllers
         {
             _departmentRepository = departmentRepository;
             _configuration = configuration;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public override ActionResult<Department> Get()
+        {
+            var result = _departmentRepository.Get();
+
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = result, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, data = result, message = "Terjadi Kesalahan" }); ;
+            }
         }
     }
 }

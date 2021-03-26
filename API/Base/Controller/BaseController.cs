@@ -27,7 +27,7 @@ namespace API.Base.Controller
         }
 
         [HttpGet]
-        public ActionResult<Entity> Get()
+        public virtual ActionResult<Entity> Get()
         {
             var result = repository.Get();
 
