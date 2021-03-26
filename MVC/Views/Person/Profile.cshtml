@@ -153,17 +153,17 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="role" class="col-form-label">Role:</label>
+                                <label for="roleID" class="col-form-label">Role:</label>
                                 <select class="form-control" id="roleID" name="roleID">
                                 </select>
                             </div>
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="updatepersonForm">Submit</button>
+                    </div>
                 </form>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" form="updatepersonForm">Submit</button>
-                </div>
             </div>
         </div>
     </div>
@@ -177,6 +177,10 @@
         var isUpdateAccountRole = 0;
 
         $(document).ready(function () {
+            load();
+        });
+
+        function load() {
             $.ajax({
                 url: "GetById",
                 type: "GET",
@@ -211,69 +215,71 @@
                     GetAllRole(result.account.accountRoles[0].roleID);
                 }
             });
-        });
+        }
 
-        //$("#updatepersonForm").validate({
-        //    rules: {
-        //        nik: {
-        //            required: true
-        //        },
-        //        ktp: {
-        //            required: true,
-        //            digits: true
-        //        },
-        //        firstName: {
-        //            required: true
-        //        },
-        //        lastName: {
-        //            required: true
-        //        },
-        //        phone: {
-        //            required: true,
-        //            digits: true,
-        //        },
-        //        birthDate: {
-        //            required: true
-        //        },
-        //        email: {
-        //            required: true,
-        //            email: true
-        //        },
-        //        address: {
-        //            required: true
-        //        },
-        //        joinDate: {
-        //            required: true
-        //        },
-        //        department: {
-        //            required: true
-        //        },
-        //    },
-        //    submitHandler: function (updatepersonForm) {
-        //        var form = $(updatepersonForm);
-        //        consoe.log(form);
-        //        $.ajax({
-        //            type: "POST",
-        //            url: "person/put",
-        //            data: form.serialize(),
-        //            "beforeSend": function (xhr) {
-        //                xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
-        //            },
-        //            success: function (data) {
-        //                $('#modal').modal('hide');
-        //                Swal.fire(
-        //                    'Saved!',
-        //                    'Your data has been saved.',
-        //                    'success'
-        //                )
-        //            },
-        //            error: function (error) {
-        //                alert('error;');
-        //                $('#modal').modal('hide');
-        //            },
-        //        });
-        //    }
-        //});
+        $("#updatepersonForm").validate({
+            rules: {
+                nik: {
+                    required: true
+                },
+                ktp: {
+                    required: true,
+                    digits: true
+                },
+                firstName: {
+                    required: true
+                },
+                lastName: {
+                    required: true
+                },
+                phone: {
+                    required: true,
+                    digits: true,
+                },
+                birthDate: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                address: {
+                    required: true
+                },
+                joinDate: {
+                    required: true
+                },
+                department: {
+                    required: true
+                },
+            },
+            submitHandler: function (updatepersonForm) {
+                var form = $(updatepersonForm);
+
+                $.ajax({
+                    type: "POST",
+                    url: "put",
+                    data: form.serialize() + "&departmentID=" + sessionStorage.getItem("departmentID"),
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
+                    success: function (data) {
+                        load();
+                        $('#modal').modal('hide');
+                        Swal.fire(
+                            'Saved!',
+                            'Your data has been saved.',
+                            'success'
+                        )
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        console.log(sendData);
+                        $('#modal').modal('hide');
+                    },
+                });
+            }
+        });
 
         function get() {
             $('#modal').modal('show');

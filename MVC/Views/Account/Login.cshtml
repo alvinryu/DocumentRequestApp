@@ -112,6 +112,10 @@
                                     sessionStorage.setItem("nik", jsontoken.nik);
                                 }
 
+                                if (sessionStorage.getItem("departmentID") == null) {
+                                    sessionStorage.setItem("departmentID", jsontoken.departmentID);
+                                }
+
                                 if (sessionStorage.getItem("role") != "HR") {
                                     window.location.href = "@Url.Action("Profile", "Person")";
                                 } else {

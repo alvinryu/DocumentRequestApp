@@ -93,7 +93,6 @@
 {
     <script>
         $(document).ready(function () {
-            var NIK = 2;
             var t = $('#table_id').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
@@ -129,11 +128,11 @@
                 "ajax": {
                     "url": "GetRequestDocumentEmployee",
                     "type": "get",
-                    data: { "NIK": NIK },
+                    "data": { "NIK": sessionStorage.getItem("nik") },
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    }
                 },
                 "columnDefs": [
                 ],

@@ -52,7 +52,6 @@
 {
     <script>
         $(document).ready(function () {
-            var DepartmentID = 2;
             var t = $('#table_id').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
@@ -87,12 +86,12 @@
                 "orderMulti": false,
                 "ajax": {
                     "url": "GetRequestForRM",
-                    "type": "get",
-                    data: { "DepartmentID": DepartmentID },
+                    "type": "get", 
+                    "data": { "DepartmentID": parseInt(sessionStorage.getItem("departmentID")) },
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    }
                 },
                 "columnDefs": [
                     {
