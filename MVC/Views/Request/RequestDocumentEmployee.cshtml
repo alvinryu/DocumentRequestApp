@@ -1,0 +1,183 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Request Document";
+}
+
+<div class="p-3">
+    <div class="row">
+        <h2 class="page-header">
+            Data
+            <small>Request Document</small>
+        </h2>
+    </div>
+    <div>
+        <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
+            <i class="fas fa-user-plus"></i> Add Request Document
+        </button>
+    </div>
+    <div>
+        <table id="table_id" class="table table-sm table-striped table-bordered m-2">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Request Date</th>
+                    <th>Name</th>
+                    <th>TypeID</th>
+                    <th>TypeName</th>
+                    <th>ApproveRM</th>
+                    <th>ApproveHR</th>
+                    <th>HR NIK</th>
+                    <th>Approve RM Date</th>
+                    <th>Approve HR Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>No</th>
+                    <th>Request Date</th>
+                    <th>Name</th>
+                    <th>TypeID</th>
+                    <th>TypeName</th>
+                    <th>ApproveRM</th>
+                    <th>ApproveHR</th>
+                    <th>HR NIK</th>
+                    <th>Approve RM Date</th>
+                    <th>Approve HR Date</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- Add Request Document Modal-->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Request Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="reqDocForm" name="reqDocForm">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <span id="spanID"></span>
+                                <label for="personNIK" class="col-form-label">Person NIK:</label>
+                                <input type="text" class="form-control" id="personNIK" name="personNIK">
+                            </div>
+                            <div class="form-group">
+                                <label for="documentTypeTypeID" class="col-form-label">Document Type:</label>
+                                <select class="form-control" id="documentTypeTypeID" name="documentTypeTypeID">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="requestDate" class="col-form-label">Request Date:</label>
+                                <input type="date" class="form-control" id="requestDate" name="requestDate">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="reqDocForm">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var NIK = 2;
+            var t = $('#table_id').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'csv',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        }
+                    },
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        orientation: 'landscape',
+                        pageSize: 'LEGAL',
+                        pageSize: 'A4', //formato stampa
+                        alignment: "center",
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                        },
+                        customize: function (doc) {
+                            doc.styles.tableHeader.alignment = 'left'; //giustifica a sinistra titoli colonne
+                            doc.content[1].table.widths = [90, 90, 90, 90, 90, 90, 90, 90]; //costringe le colonne ad occupare un dato spazio per gestire il baco del 100% width che non si concretizza mai
+                        }
+                    },
+                ],
+                "filter": true,
+                "orderMulti": false,
+                "ajax": {
+                    "url": "GetRequestDocumentEmployee",
+                    "type": "get",
+                    data: { "NIK": NIK },
+                    "dataType": "json",
+                    //"beforeSend": function (xhr) {
+                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    //}
+                },
+                "columnDefs": [
+                ],
+                "columns": [
+                    {
+                        "data": 'id',
+                        "defaultContent": ''
+                    },
+                    {
+                        "data": 'requestDate',
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD');
+                        }
+                    },
+                    { "data": 'name' },
+                    { "data": 'typeID' },
+                    { "data": 'typeName' },
+                    { "data": 'approveRM' },
+                    { "data": 'approveHR' },
+                    { "data": 'hR_NIK' },
+                    {
+                        "data": 'approveRMDate',
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD');
+                        }
+                    },
+                    {
+                        "data": 'approveHRDate',
+                        render: function (data) {
+                            return moment(data).format('YYYY-MM-DD');
+                        }
+                    }
+                ]
+            });
+            t.on('order.dt search.dt', function () {
+                t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                    t.cell(cell).invalidate('dom');
+                });
+            }).draw();
+        });
+
+        function resetUpdate() {
+            $('#reqDocForm').trigger('reset');
+        }
+    </script>
+}
