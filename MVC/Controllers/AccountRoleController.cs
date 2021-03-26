@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using API.Models;
@@ -17,6 +18,9 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> UpdateAccountRole(AccountRole accountRole)
         {
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+
             StringContent content = new StringContent(JsonConvert.SerializeObject(accountRole), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync("AccountRole/UpdateAccountRole", content);
             string apiResponse = await response.Content.ReadAsStringAsync();

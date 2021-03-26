@@ -5,12 +5,10 @@
 }
 
 <div class="p-3">
-    <div>
-        <h2 class="page-header">
-            Data
-            <small>Person</small>
-        </h2>
-    </div>
+    <h2 class="page-header">
+        Data
+        <small>Person</small>
+    </h2>
     <div>
         <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
             <i class="fas fa-user-plus"></i> Add
@@ -76,10 +74,12 @@
                             <div class="form-group">
                                 <label for="nik" class="col-form-label">NIK:</label>
                                 <input type="text" class="form-control" id="nik" name="nik">
+                                <span class="text-danger" id="spanNIK"></span>
                             </div>
                             <div class="form-group">
                                 <label for="ktp" class="col-form-label">KTP:</label>
                                 <input type="text" class="form-control" id="ktp" name="ktp">
+                                <span class="text-danger" id="spanKTP"></span>
                             </div>
                             <div class="form-group">
                                 <label for="firstName" class="col-form-label">First Name:</label>
@@ -102,6 +102,7 @@
                             <div class="form-group">
                                 <label for="email" class="col-form-label">Email:</label>
                                 <input type="email" class="form-control" id="email" name="email">
+                                <span class="text-danger" id="spanEmail"></span>
                             </div>
                             <div class="form-group">
                                 <label for="address" class="col-form-label">Address:</label>
@@ -139,9 +140,10 @@
         var isUpdate = 0;
         var isUpdateAccount = 0;
         var isUpdateAccountRole = 0;
+
         $(document).ready(function () {
             //GetAllDepartment();
-            var isUpdate = 0;
+            //var isUpdate = 0;
             var t = $('#table_id').DataTable({
                 "filter": true,
                 "orderMulti": false,
@@ -150,9 +152,9 @@
                     "type": "get",
                     "data": "result",
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    }
                 },
                 "dom": 'Bfrtip',
                 "buttons": [
@@ -244,12 +246,80 @@
                     }
                 ]
             });
+
             t.on('order.dt search.dt', function () {
                 t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
                     cell.innerHTML = i + 1;
                     t.cell(cell).invalidate('dom');
                 });
             }).draw();
+
+        });
+
+        $("#nik").change(function () {
+            $.ajax({
+                url: "Person/GetById",
+                type: "GET",
+                data: { 'key': $(this).val() },
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var statusCode = (JSON.parse(JSON.stringify(data))).status;
+                    if (statusCode == 200) {
+                        $("span#spanNIK").text("NIK has been taken!");
+                    } else {
+                        $("span#spanNIK").text("");
+                    }
+                },
+                error: function (error) {
+                    $("span#spanNIK").text("");
+                }
+            });
+        });
+
+        $("#email").change(function () {
+            $.ajax({
+                url: "Person/CheckPersonByEmail/",
+                type: "POST",
+                data: { 'Email': $(this).val() },
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var statusCode = (JSON.parse(JSON.stringify(data))).status;
+                    if (statusCode == 200) {
+                        $("span#spanEmail").text("Email has been taken!");
+                    } else {
+                        $("span#spanEmail").text("");
+                    }
+                },
+                error: function (error) {
+                    $("span#spanEmail").text("");
+                }
+            });
+        });
+
+        $("#ktp").change(function () {
+            $.ajax({
+                url: "Person/CheckPersonByKTP/",
+                type: "POST",
+                data: { 'KTP': $(this).val() },
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var statusCode = (JSON.parse(JSON.stringify(data))).status;
+                    if (statusCode == 200) {
+                        $("span#spanKTP").text("KTP has been taken!");
+                    } else {
+                        $("span#spanKTP").text("");
+                    }
+                },
+                error: function (error) {
+                    $("span#spanEmail").text("");
+                }
+            });
         });
 
         $("#personForm").validate({
@@ -258,7 +328,8 @@
                     required: true
                 },
                 ktp: {
-                    required: true
+                    required: true,
+                    digits: true
                 },
                 firstName: {
                     required: true
@@ -267,7 +338,8 @@
                     required: true
                 },
                 phone: {
-                    required: true
+                    required: true,
+                    digits: true,
                 },
                 birthDate: {
                     required: true
@@ -297,11 +369,10 @@
                     type: "POST",
                     url: urlString,
                     data: form.serialize(),
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //},
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
                     success: function (data) {
-                        console.log(data);
                         $('#modal').modal('hide');
                         if (isUpdate == 1) {
                             manageAccountRole(isUpdateAccountRole, $("#modal").find('#nik').val(), $("#modal").find('#roleID').val());
@@ -332,8 +403,10 @@
             $.ajax({
                 url: "Department/Get",
                 type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
-                    console.log(data);
                     var result = (JSON.parse(JSON.stringify(data))).data;
                     const dataDepartmentName = new Map();
                     result.map(x => {
@@ -363,8 +436,10 @@
             $.ajax({
                 url: "Role/Get",
                 type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
-                    console.log(data);
                     var result = (JSON.parse(JSON.stringify(data))).data;
                     const dataRoleName = new Map();
                     result.map(x => {
@@ -390,17 +465,20 @@
         }
 
         function Get(nik) {
+            $("label.error").css("display", "none");
+            $("span#spanNIK").text("");
+            $("span#spanEmail").text("");
+            $("span#spanKTP").text("");
+
             //debugger;
             $.ajax({
                 url: "Person/GetById",
                 type: "GET",
                 data: { 'key': nik },
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
-                    console.log(data);
-
                     $('#modal').modal('show');
                     var result = (JSON.parse(JSON.stringify(data))).data;
 
@@ -427,6 +505,10 @@
             isUpdateAccount = 0;
             isUpdateAccountRole = 0;
             $('#personForm').trigger('reset');
+            $("label.error").css("display", "none");
+            $("span#spanNIK").text("");
+            $("span#spanEmail").text("");
+            $("span#spanKTP").text("");
             GetAllDepartment();
             GetAllRole();
         }
@@ -446,11 +528,10 @@
                         type: "POST",
                         url: "Person/Delete",
                         data: { 'key': nik },
-                        //"beforeSend": function (xhr) {
-                        //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                        //},
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        },
                         success: function (data) {
-                            console.log(data);
                             Swal.fire(
                                 'Deleted!',
                                 'Data with NIK :' + nik + ' data has been deleted.',
@@ -478,11 +559,10 @@
                 url: urlString,
                 type: "POST",
                 data: "nik=" + nik + "&password=default",
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
-                    console.log(data);
                     console.log('account updated!');
                 }
             });
@@ -498,11 +578,10 @@
                 url: urlString,
                 type: "POST",
                 data: "nik=" + nik + "&roleID=" + roleID,
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
-                    console.log(data);
                     console.log('accountrole updated!');
                 }
             });
@@ -561,9 +640,9 @@
             $.ajax({
                 url: "Dashboard/ChartRole",
                 type: "GET",
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (result) {
                     let resp = result.data;
                     for (var i = 0; i < resp.length; i++) {
@@ -582,9 +661,9 @@
             $.ajax({
                 url: "Dashboard/ChartDocType",
                 type: "GET",
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (result) {
                     let resp = result.data;
                     for (var i = 0; i < resp.length; i++) {

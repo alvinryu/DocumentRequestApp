@@ -7,6 +7,7 @@ namespace API.ViewModels
 {
     public class LoginVM
     {
+        public string NIK { set; get; }
         public string Email { set; get; }
         public string Password { set; get; }
         public string FullName { set; get; }

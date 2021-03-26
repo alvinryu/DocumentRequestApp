@@ -85,6 +85,7 @@
 {
     <script>
         var isUpdate = 0;
+
         $(document).ready(function () {
             GetAllDocumentType();
             var t = $('#table_id').DataTable({
@@ -124,9 +125,9 @@
                     "type": "get",
                     "data": "result",
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    }
                 },
                 "columnDefs": [
                     {
@@ -189,9 +190,9 @@
                     type: "POST",
                     url: urlString,
                     data: form.serialize(),
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //},
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
                     success: function (data) {
                         $('#modal').modal('hide');
                         Swal.fire(
@@ -212,23 +213,26 @@
 
         function GetAllDocumentType() {
             $.ajax({
-                    url: "DocumentType/Get",
-                    type: "GET",
-                    success: function (data) {
-                        var result = (JSON.parse(JSON.stringify(data))).data;
-                        const dataDocumentType = new Map();
-                        result.map(x => {
-                            dataDocumentType.set(x.typeID, x.typeName);
-                        });
-                        dataDocumentType.forEach((value, key) => {
-                            $('#documentTypeTypeID').append(
-                                $('<option></option>').val(key).html(value)
-                            );
-                        });
-                    },
-                    error: function (error) {
-                        console.log(error);
-                    },
+                url: "DocumentType/Get",
+                type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+                    const dataDocumentType = new Map();
+                    result.map(x => {
+                        dataDocumentType.set(x.typeID, x.typeName);
+                    });
+                    dataDocumentType.forEach((value, key) => {
+                        $('#documentTypeTypeID').append(
+                            $('<option></option>').val(key).html(value)
+                        );
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
             });
         }
 
@@ -239,9 +243,9 @@
                 url: "request/GetById",
                 type: "GET",
                 data: { 'key': requestID },
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
                     $('#modal').modal('show');
                     var result = (JSON.parse(JSON.stringify(data))).data;
@@ -275,9 +279,9 @@
                         type: "POST",
                         url: "request/Delete",
                         data: { 'key': requestID },
-                        //"beforeSend": function (xhr) {
-                        //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                        //},
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        },
                         success: function (data) {
                             Swal.fire(
                                 'Deleted!',

@@ -101,6 +101,7 @@
 {
     <script>
         var isUpdate = 0;
+
         $(document).ready(function () {
             var isUpdate = 0;
             var t = $('#table_id').DataTable({
@@ -140,9 +141,9 @@
                     "type": "get",
                     "data": "result",
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    }
                 },
                 "columnDefs": [
                     {
@@ -221,9 +222,9 @@
                     type: "POST",
                     url: urlString,
                     data: form.serialize(),
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //},
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
                     success: function (data) {
                         $('#modal').modal('hide');
                         Swal.fire(
@@ -248,9 +249,9 @@
                 url: "detailrequest/GetById",
                 type: "GET",
                 data: { 'key': requestID },
-                //"beforeSend": function (xhr) {
-                //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                //},
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
                 success: function (data) {
                     $('#modal').modal('show');
                     var result = (JSON.parse(JSON.stringify(data))).data;
@@ -285,9 +286,9 @@
                         type: "POST",
                         url: "detailrequest/Delete",
                         data: { 'key': requestID },
-                        //"beforeSend": function (xhr) {
-                        //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                        //},
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        },
                         success: function (data) {
                             Swal.fire(
                                 'Deleted!',

@@ -42,6 +42,12 @@
             color: red;
             font-style: italic;
         }
+
+        table.dataTable td {
+            padding: 3px 10px;
+            width: 1px;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -67,7 +73,7 @@
             <!-- Brand Logo -->
             <a href="index3.html" class="brand-link">
                 <img src="~/lib/admin-lte/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">AdminLTE 3</span>
+                <span class="brand-text font-weight-light" id="userpanelrole">AdminLTE 3</span>
             </a>
 
             <!-- Sidebar -->
@@ -78,7 +84,7 @@
                         <img src="~/lib/admin-lte/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">Alexander Pierce</a>
+                        <a href="#" class="d-block" id="userpanelname">Alexander Pierce</a>
                     </div>
                 </div>
 
@@ -86,7 +92,7 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
-    with font-awesome or any other icon font library -->
+                        with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <a href="../Person" class="nav-link">
                                 <i class="nav-icon fas fa-address-book"></i>
@@ -95,7 +101,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="departmentMenu">
                             <a href="../Department" class="nav-link">
                                 <i class="nav-icon fas fa-building"></i>
                                 <p>
@@ -103,7 +109,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="documentTypeMenu">
                             <a href="../DocumentType" class="nav-link">
                                 <i class="nav-icon fas fa-file-alt"></i>
                                 <p>
@@ -151,7 +157,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="roleMenu">
                             <a href="../Role" class="nav-link">
                                 <i class="nav-icon fas fa-user-circle"></i>
                                 <p>
@@ -161,7 +167,7 @@
                         </li>
                         <li class="nav-header">SETTING</li>
                         <li class="nav-item">
-                            <a href="../Role" class="nav-link">
+                            <a href="../Account/ChangePassword" class="nav-link" id="changePassword">
                                 <i class="nav-icon fas fa-key"></i>
                                 <p>
                                     Change Password
@@ -169,7 +175,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="../Role" class="nav-link">
+                            <a href='javascript:;' onclick='logOut();' class="nav-link">
                                 <i class="nav-icon fas fa-power-off"></i>
                                 <p>
                                     Logout
@@ -188,7 +194,7 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                        @RenderBody()
+                    @RenderBody()
                 </div><!-- /.container-fluid -->
             </section>
             <!-- /.content -->
@@ -262,5 +268,42 @@
     <script src="~/lib/admin-lte/dist/js/pages/dashboard.js"></script>
     @RenderSection("scripts")
 
+    <script>
+        function logOut() {
+            sessionStorage.clear()
+            window.location.href = "/Account/Login";
+        }
+
+        if (sessionStorage.getItem("token") == null) {
+            window.location.href = "/Account/Login";
+        } else {
+            var token = sessionStorage.getItem("token");
+            var jsontoken = JSON.parse(atob(token.split('.')[1]));
+
+            if (sessionStorage.getItem("role") == null) {
+                sessionStorage.setItem("role", jsontoken.role);
+            }
+
+            if (sessionStorage.getItem("role") != "HR") {
+                $("#departmentMenu").css("display", "none");
+                $("#documentTypeMenu").css("display", "none");
+                $("#roleMenu").css("display", "none");
+                $("#chart1").css("display", "none");
+                $("#chart2").css("display", "none");
+            }
+
+            if (sessionStorage.getItem("userpanelname") == null) {
+                sessionStorage.setItem("userpanelname", jsontoken.name);
+            }
+
+            if (sessionStorage.getItem("nik") == null) {
+                sessionStorage.setItem("nik", jsontoken.nik);
+            }
+
+            $("#userpanelname").text(sessionStorage.getItem("userpanelname"));
+            $("#userpanelrole").text("Role: " + sessionStorage.getItem("role"));
+            //$("#changePassword").attr("href", "../Account/ChangePassword/" + sessionStorage.getItem("nik"));
+        }
+    </script>
 </body>
 </html>

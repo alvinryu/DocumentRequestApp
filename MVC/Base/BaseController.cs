@@ -28,8 +28,8 @@ namespace MVC.Base
 
         public async Task<JsonResult> Get()
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             using var response = await httpClient.GetAsync(typeof(Entity).Name);
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -39,8 +39,8 @@ namespace MVC.Base
 
         public async Task<JsonResult> GetById(Key key)
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             var response = await httpClient.GetAsync(typeof(Entity).Name + "/" + key);
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -49,10 +49,10 @@ namespace MVC.Base
         }
 
         [HttpPost]
-        public async Task<JsonResult> Post(Entity entity)
+        public async virtual Task<JsonResult> Post(Entity entity)
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(entity), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync(typeof(Entity).Name, content);
@@ -64,8 +64,8 @@ namespace MVC.Base
         [HttpPost]
         public async Task<JsonResult> Put(Entity entity)
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(entity), Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync(typeof(Entity).Name, content);
@@ -77,13 +77,26 @@ namespace MVC.Base
         [HttpPost]
         public async Task<JsonResult> Delete(Key key)
         {
-            //var header = Request.Headers["Authorization"];
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
             using var response = await httpClient.DeleteAsync(typeof(Entity).Name + '/' + key);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<Entity>>(apiResponse);
             return new JsonResult(result);
+        }
+
+        public async Task<ResponseVM<SendEmailVM>> SendEmail(SendEmailVM sendEmailVM)
+        {
+            //var mailSubject = "Forgot Password Notification";
+            //var mailBody = "<h2>Your Password was changed!</h2> Use this temporary password to login : " + password + "<br><br>We recommend you to change the temporary password in HRIS immediately";
+            //var sendEmailVM = new SendEmailVM { Email = Email, MessageSubject = mailSubject, MessageBody = mailBody };
+
+            StringContent content = new StringContent(JsonConvert.SerializeObject(sendEmailVM), Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync(typeof(Entity).Name + "/SendEmail", content);
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<SendEmailVM>>(apiResponse);
+            return result;
         }
     }
 }

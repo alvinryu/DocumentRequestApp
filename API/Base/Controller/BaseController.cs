@@ -15,7 +15,7 @@ namespace API.Base.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BaseController<Entity, Repository, Key> : ControllerBase
         where Entity : class
         where Repository : IRepository<Entity, Key>
@@ -84,7 +84,7 @@ namespace API.Base.Controller
         }
 
         [HttpPut]
-        public ActionResult Put(Entity entity)
+        public virtual ActionResult Put(Entity entity)
         {
             if (entity == null)
             {

@@ -45,5 +45,26 @@ namespace API.Controllers
                 return new OkObjectResult(new { Status = HttpStatusCode.Unauthorized, ErrorMessage = "Unauthorized Access" });
             }
         }
+
+        [HttpPut]
+        [AllowAnonymous]
+        public override ActionResult Put(Account account)
+        {
+            if (account == null)
+            {
+                return BadRequest(new { status = HttpStatusCode.BadRequest, message = "Data Yang Di-Input Salah / Tidak Lengkap", data = "" });
+            }
+
+            var result = _accountRepository.Update(account);
+
+            if (result > 0)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = "", message = "Berhasil Update Data" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Update Data", data = "" });
+            }
+        }
     }
 }

@@ -95,9 +95,8 @@
                         url: urlString,
                         data: form.serialize(),
                         success: function (data) {
-                            console.log(data);
-                            sessionStorage.token = data['token'];
-                            console.log(sessionStorage.token);
+                            sessionStorage.setItem("token", data['token']);
+
                             if (data.status == "200") {
                                 window.location.href = "@Url.Action("Index", "Person")";
                             } else {
