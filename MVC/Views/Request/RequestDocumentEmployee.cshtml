@@ -124,6 +124,11 @@
                     }
                 },
                 "columnDefs": [
+                    {
+                        "targets": [8],
+                        "orderable": false,
+                        "searchable": false
+                    }
                 ],
                 "columns": [
                     {
@@ -175,7 +180,7 @@
                     {
                         "data": 'id',
                         "render": function (data, type, row, meta) {
-                            return (row['approveRM'] == 1 && row['approveHR'] == 1) ? '<a class="btn btn-primary" onclick="doc(\'' + row['requestID'] + '\')"><i class ="fas fa-download"></i> Download</a> ' : "";
+                            return (row['approveRM'] == 1 && row['approveHR'] == 1) ? '<a class="btn btn-primary" onclick="doc(\'' + row['requestID'] + '\')"><i class ="fas fa-download"></i> Download</a> ' : "Not Available";
                         }
                     }
                 ]
