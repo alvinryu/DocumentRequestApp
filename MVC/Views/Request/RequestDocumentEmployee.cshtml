@@ -22,7 +22,6 @@
                     <th>No</th>
                     <th>Request Date</th>
                     <th>Name</th>
-                    <th>TypeID</th>
                     <th>TypeName</th>
                     <th>ApproveRM</th>
                     <th>ApproveHR</th>
@@ -38,7 +37,6 @@
                     <th>No</th>
                     <th>Request Date</th>
                     <th>Name</th>
-                    <th>TypeID</th>
                     <th>TypeName</th>
                     <th>ApproveRM</th>
                     <th>ApproveHR</th>
@@ -100,13 +98,13 @@
                     {
                         extend: 'csv',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                         }
                     },
                     {
@@ -116,7 +114,7 @@
                         pageSize: 'A4', //formato stampa
                         alignment: "center",
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                         },
                         customize: function (doc) {
                             doc.styles.tableHeader.alignment = 'left'; //giustifica a sinistra titoli colonne
@@ -149,10 +147,27 @@
                         }
                     },
                     { "data": 'name' },
-                    { "data": 'typeID' },
                     { "data": 'typeName' },
-                    { "data": 'approveRM' },
-                    { "data": 'approveHR' },
+                    {
+                        "data": 'approveRM',
+                        render: function (data) {
+                            if (data === 0)
+                                return "Reject";
+                            else if (data === 1)
+                                return "Approve";
+                            return "Pending";
+                        }
+                    },
+                    {
+                        "data": 'approveHR',
+                        render: function (data) {
+                            if (data === 0)
+                                return "Reject";
+                            else if (data === 1)
+                                return "Approve";
+                            return "Pending";
+                        }
+                    },
                     { "data": 'hR_NIK' },
                     {
                         "data": 'approveRMDate',
