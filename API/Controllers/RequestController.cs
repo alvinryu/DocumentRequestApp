@@ -5,11 +5,13 @@ using System.Net;
 using System.Threading.Tasks;
 using API.Base.Controller;
 using API.Models;
+using API.ViewModels;
 using API.Repository.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using API.Services;
 
 namespace API.Controllers
 {
@@ -71,6 +73,36 @@ namespace API.Controllers
             else
             {
                 return NotFound(new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", data = "" });
+            }
+        }
+
+        [HttpPut("ApproveOrRejectByHR")]
+        [AllowAnonymous]
+        public ActionResult ApproveOrRejectByHR(ApproveOrRejectVM approveReject)
+        {
+            var result = _requestRepository.ApproveOrRejectByHR(approveReject);
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = "", Message = "Berhasil update data" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Update Data", data = "" });
+            }
+        }
+
+        [HttpPut("ApproveOrRejectByRM")]
+        [AllowAnonymous]
+        public ActionResult ApproveOrRejectByRM(ApproveOrRejectVM approveReject)
+        {
+            var result = _requestRepository.ApproveOrRejectByRM(approveReject);
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = "", Message = "Berhasil update data" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Update Data", data = "" });
             }
         }
     }

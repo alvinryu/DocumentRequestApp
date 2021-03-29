@@ -49,6 +49,17 @@ namespace MVC.Controllers
             return new JsonResult(result);
         }
 
+        [HttpPost]
+        public async Task<JsonResult> ApproveOrRejectByHR(ApproveOrRejectVM approveReject)
+        {
+            StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
+            
+            var response = await httpClient.PutAsync("Request/ApproveOrRejectByHR", content);
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);
+            return new JsonResult(result);
+        }
+
         public async Task<JsonResult> GetRequestForRM(int DepartmentID)
         {
             var header = Request.Headers["Authorization"];
@@ -116,6 +127,17 @@ namespace MVC.Controllers
             };
             
             return fileStreamResult;
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> ApproveOrRejectByRM(ApproveOrRejectVM approveReject)
+        {
+            StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync("Request/ApproveOrRejectByRM", content);
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);
+            return new JsonResult(result);
         }
     }
 }

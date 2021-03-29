@@ -15,6 +15,7 @@
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Request ID</th>
                     <th>Request Date</th>
                     <th>Name</th>
                     <th>TypeID</th>
@@ -32,6 +33,7 @@
             <tfoot>
                 <tr>
                     <th>No</th>
+                    <th>Request ID</th>
                     <th>Request Date</th>
                     <th>Name</th>
                     <th>TypeID</th>
@@ -58,13 +60,13 @@
                     {
                         extend: 'csv',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                         }
                     },
                     {
@@ -74,7 +76,7 @@
                         pageSize: 'A4', //formato stampa
                         alignment: "center",
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                         },
                         customize: function (doc) {
                             doc.styles.tableHeader.alignment = 'left'; //giustifica a sinistra titoli colonne
@@ -95,7 +97,11 @@
                 },
                 "columnDefs": [
                     {
-                        "targets": [10],
+                        "targets": [1],
+                        "visible": false,
+                    },
+                    {
+                        "targets": [11],
                         "orderable": false,
                         "searchable": false
                     }
@@ -105,6 +111,7 @@
                         "data": 'id',
                         "defaultContent": ''
                     },
+                    { "data": 'requestID' },
                     {
                         "data": 'requestDate',
                         render: function (data) {
@@ -132,8 +139,8 @@
                     {
                         "data": 'id',
                         "render": function (data, type, row, meta) {
-                            return '<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Edit" onclick="Get(\'' + row['requestID'] + '\')"><i class ="far fa-edit"></i> Approve</a> ' +
-                                '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete" onclick="Delete(\'' + row['requestID'] + '\')"><i class ="far fa-trash-alt"></i> Reject</button>'
+                            return '<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Approve" onclick="ApproveOrRejectByHR(1,\'' + row['requestID'] + '\')"><i class ="far fa-edit"></i> Approve</a> ' +
+                                '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Reject" onclick="ApproveOrRejectByHR(0,\'' + row['requestID'] + '\')"><i class ="far fa-trash-alt"></i> Reject</button>'
                         }
                     }
                 ]
@@ -144,6 +151,45 @@
                     t.cell(cell).invalidate('dom');
                 });
             }).draw();
-        });
+       });
+
+        function ApproveOrRejectByHR(approve, requestID)
+        {
+            var hR_NIK = 30;
+            //var approveHRDate = '2021-03-26T09:14:28.803Z';
+            var approveHRDate = moment().format();
+            swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Do this!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "ApproveOrRejectByHR",
+                        data: { 'approve': approve, 'requestID': requestID, 'hR_NIK': hR_NIK, 'approveHRDate': approveHRDate },
+                        //"beforeSend": function (xhr) {
+                        //    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        //},
+                        success: function (data) {
+                            //Swal.fire(
+                            //    'Deleted!',
+                            //    'Data with NIK :' + nik + ' data has been deleted.',
+                            //    'success'
+                            //)
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                        error: function (error) {
+                            alert('error;');
+                            $('#table_id').DataTable().ajax.reload();
+                        },
+                    });
+                }
+            })
+        }
     </script>
 }

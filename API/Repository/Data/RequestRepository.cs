@@ -45,5 +45,28 @@ namespace API.Repository.Data
             var result = _requestRepository.Get("SP_GetRequestForRM", _parameters);
             return result;
         }
+
+        public ApproveOrRejectVM ApproveOrRejectByHR (ApproveOrRejectVM approveReject)
+        {
+            var _requestRepository = new GeneralDapperRepository<ApproveOrRejectVM>(_configuration);
+
+            _parameters.Add("@Approve", approveReject.Approve);
+            _parameters.Add("@RequestID", approveReject.RequestID);
+            _parameters.Add("@HR_NIK", approveReject.HR_NIK);
+            _parameters.Add("@ApproveHRDate", approveReject.ApproveHRDate);
+            var result = _requestRepository.Query("SP_ApproveOrRejectByHR", _parameters);
+            return result;
+        }
+
+        public ApproveOrRejectVM ApproveOrRejectByRM(ApproveOrRejectVM approveReject)
+        {
+            var _requestRepository = new GeneralDapperRepository<ApproveOrRejectVM>(_configuration);
+
+            _parameters.Add("@Approve", approveReject.Approve);
+            _parameters.Add("@RequestID", approveReject.RequestID);
+            _parameters.Add("@ApproveRMDate", approveReject.ApproveRMDate);
+            var result = _requestRepository.Query("SP_ApproveOrRejectByRM", _parameters);
+            return result;
+        }
     }
 }
