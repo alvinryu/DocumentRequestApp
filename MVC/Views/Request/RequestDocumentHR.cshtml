@@ -89,9 +89,9 @@
                     "type": "get",
                     "data": "result",
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    }
                 },
                 "columnDefs": [
                     {

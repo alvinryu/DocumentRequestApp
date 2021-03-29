@@ -94,10 +94,18 @@
                         <!-- Add icons to the links using the .nav-icon class
                         with font-awesome or any other icon font library -->
                         <li class="nav-item">
-                            <a href="../Person" class="nav-link">
+                            <a href="../Person" class="nav-link" id="employeeMenu">
                                 <i class="nav-icon fas fa-address-book"></i>
                                 <p>
-                                    Person
+                                    All Employee
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="../Person/Profile" class="nav-link" id="employeeProfile">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>
+                                    Profile
                                 </p>
                             </a>
                         </li>
@@ -117,7 +125,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="allRequest">
                             <a href="../Request" class="nav-link">
                                 <i class="nav-icon fas fa-file-medical"></i>
                                 <p>
@@ -125,7 +133,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="approvalHR">
                             <a href="../Request/RequestDocumentHR" class="nav-link">
                                 <i class="nav-icon fas fa-file-signature"></i>
                                 <p>
@@ -133,7 +141,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="approvalRM">
                             <a href="../Request/RequestDocumentRM" class="nav-link">
                                 <i class="nav-icon fas fa-file-signature"></i>
                                 <p>
@@ -141,7 +149,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="approvalEmployee">
                             <a href="../Request/RequestDocumentEmployee" class="nav-link">
                                 <i class="nav-icon fas fa-file-medical"></i>
                                 <p>
@@ -149,7 +157,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="allDetailRequest">
                             <a href="../DetailRequest" class="nav-link">
                                 <i class="nav-icon fas fa-file-medical-alt"></i>
                                 <p>
@@ -277,27 +285,23 @@
         if (sessionStorage.getItem("token") == null) {
             window.location.href = "/Account/Login";
         } else {
-            var token = sessionStorage.getItem("token");
-            var jsontoken = JSON.parse(atob(token.split('.')[1]));
-
-            if (sessionStorage.getItem("role") == null) {
-                sessionStorage.setItem("role", jsontoken.role);
-            }
+            $("#allRequest").css("display", "none");
+            $("#allDetailRequest").css("display", "none");
 
             if (sessionStorage.getItem("role") != "HR") {
+                $("#employeeMenu").css("display", "none");
                 $("#departmentMenu").css("display", "none");
                 $("#documentTypeMenu").css("display", "none");
                 $("#roleMenu").css("display", "none");
+                $("#approvalHR").css("display", "none");
                 $("#chart1").css("display", "none");
                 $("#chart2").css("display", "none");
+            } else {
+                $("#approvalRM").css("display", "none");
             }
 
-            if (sessionStorage.getItem("userpanelname") == null) {
-                sessionStorage.setItem("userpanelname", jsontoken.name);
-            }
-
-            if (sessionStorage.getItem("nik") == null) {
-                sessionStorage.setItem("nik", jsontoken.nik);
+            if (sessionStorage.getItem("role") == "Employee") {
+                $("#approvalRM").css("display", "none");
             }
 
             $("#userpanelname").text(sessionStorage.getItem("userpanelname"));

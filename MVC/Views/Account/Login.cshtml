@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </form>
-                <br/>
+                <br />
                 <p class="mb-1">
                     <a href="#" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">I forgot my password</a>
                 </p>
@@ -96,9 +96,31 @@
                         data: form.serialize(),
                         success: function (data) {
                             sessionStorage.setItem("token", data['token']);
-
                             if (data.status == "200") {
-                                window.location.href = "@Url.Action("Index", "Person")";
+                                var token = sessionStorage.getItem("token");
+                                var jsontoken = JSON.parse(atob(token.split('.')[1]));
+
+                                if (sessionStorage.getItem("role") == null) {
+                                    sessionStorage.setItem("role", jsontoken.role);
+                                }
+
+                                if (sessionStorage.getItem("userpanelname") == null) {
+                                    sessionStorage.setItem("userpanelname", jsontoken.name);
+                                }
+
+                                if (sessionStorage.getItem("nik") == null) {
+                                    sessionStorage.setItem("nik", jsontoken.nik);
+                                }
+
+                                if (sessionStorage.getItem("departmentID") == null) {
+                                    sessionStorage.setItem("departmentID", jsontoken.departmentID);
+                                }
+
+                                if (sessionStorage.getItem("role") != "HR") {
+                                    window.location.href = "@Url.Action("Profile", "Person")";
+                                } else {
+                                    window.location.href = "@Url.Action("Index", "Person")";
+                                }
                             } else {
                                 Swal.fire(
                                     'Failed',

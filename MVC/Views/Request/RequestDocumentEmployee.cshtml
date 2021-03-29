@@ -14,6 +14,9 @@
         <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
             <i class="fas fa-user-plus"></i> Add Request Document
         </button>
+        <button id="document" class="mb-3 btn btn-primary text-center" onclick="doc()">
+            <i class="fas fa-user-plus"></i> Print Request Document
+        </button>
     </div>
     <div>
         <table id="table_id" class="table table-sm table-striped table-bordered m-2">
@@ -91,7 +94,6 @@
 {
     <script>
         $(document).ready(function () {
-            var NIK = 2;
             var t = $('#table_id').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
@@ -127,11 +129,11 @@
                 "ajax": {
                     "url": "GetRequestDocumentEmployee",
                     "type": "get",
-                    data: { "NIK": NIK },
+                    "data": { "NIK": sessionStorage.getItem("nik") },
                     "dataType": "json",
-                    //"beforeSend": function (xhr) {
-                    //    xhr.setRequestHeader('Authorization', sessionStorage.token);
-                    //}
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.token);
+                    }
                 },
                 "columnDefs": [
                 ],
@@ -193,6 +195,22 @@
 
         function resetUpdate() {
             $('#reqDocForm').trigger('reset');
+        }
+
+        function doc() {
+            var request = new XMLHttpRequest();
+            request.responseType = "blob";
+            request.open("GET", "Doc/?RequestID=1");
+            request.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+            request.onload = function () {
+                var url = window.URL.createObjectURL(this.response);
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.href = url;
+                a.download = this.response.name || "download-" + $.now()
+                a.click();
+            }
+            request.send();
         }
     </script>
 }

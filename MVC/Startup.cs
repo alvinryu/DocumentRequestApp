@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Wkhtmltopdf.NetCore;
 
 namespace MVC
 {
@@ -17,6 +18,7 @@ namespace MVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddWkhtmltopdf("wkhtmltopdf");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

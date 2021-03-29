@@ -42,5 +42,7 @@ namespace MVC.Controllers
             var result = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponse);
             return new JsonResult(result);
         }
+
+        public ViewResult Profile() => View();
     }
 }

@@ -1,0 +1,362 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Profile";
+}
+
+<div class="p-3">
+    <h2 class="page-header mr-3" style="display:inline-block;">Profile</h2>
+    <a class="btn btn-success mb-3" data-toggle="tooltip" data-placement="top" title="Edit" onclick="get()"><i class="far fa-edit"></i> Edit</a>
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">NIK</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_nik">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">KTP</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_ktp">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Full Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_fullName">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Phone</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_phone">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Birth Date</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_birthDate">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Address</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_address">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_email">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Join Date</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_joinDate">
+                        ...Loading
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h6 class="mb-0">Department</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary" id="_department">
+                        ...Loading
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Person Modal-->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Person</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>x</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="updatepersonForm" name="updatepersonForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nik" class="col-form-label">NIK:</label>
+                                <input type="text" class="form-control" id="nik" name="nik">
+                                <span class="text-danger" id="spanNIK"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="ktp" class="col-form-label">KTP:</label>
+                                <input type="text" class="form-control" id="ktp" name="ktp">
+                                <span class="text-danger" id="spanKTP"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName" class="col-form-label">First Name:</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" class="col-form-label">Last Name:</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone" class="col-form-label">Phone:</label>
+                                <input type="number" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="birthDate" class="col-form-label">Birth Date:</label>
+                                <input type="date" class="form-control" id="birthDate" name="birthDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-form-label">Email:</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                                <span class="text-danger" id="spanEmail"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="address" class="col-form-label">Address:</label>
+                                <textarea class="form-control" id="address" name="address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="joinDate" class="col-form-label">Join Date:</label>
+                                <input type="date" class="form-control" id="joinDate" name="joinDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="departmentID" class="col-form-label">Department:</label>
+                                <select class="form-control" id="departmentID" name="departmentID">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="roleID" class="col-form-label">Role:</label>
+                                <select class="form-control" id="roleID" name="roleID">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="updatepersonForm">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        var isUpdate = 0;
+        var isUpdateAccount = 0;
+        var isUpdateAccountRole = 0;
+
+        $(document).ready(function () {
+            load();
+        });
+
+        function load() {
+            $.ajax({
+                url: "GetById",
+                type: "GET",
+                data: { 'key': sessionStorage.getItem("nik") },
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+
+                    $('#_nik').text(result.nik);
+                    $('#_ktp').text(result.ktp);
+                    $('#_fullName').text(result.firstName + " " + result.lastName);
+                    $('#_phone').text(result.phone);
+                    $('#_birthDate').text(moment(result.birthDate).format('YYYY-MM-DD'));
+                    $('#_email').text(result.email);
+                    $('#_address').text(result.address);
+                    $('#_joinDate').text(moment(result.joinDate).format('YYYY-MM-DD'));
+                    $('#_department').text(result.department.departmentName);
+
+                    $('#nik').val(result.nik);
+                    $('#ktp').val(result.ktp);
+                    $('#firstName').val(result.firstName);
+                    $('#lastName').val(result.lastName);
+                    $('#phone').val(result.phone);
+                    $('#birthDate').val(moment(result.birthDate).format('YYYY-MM-DD'));
+                    $('#email').val(result.email);
+                    $('#address').val(result.address);
+                    $('#joinDate').val(moment(result.joinDate).format('YYYY-MM-DD'));
+
+                    GetAllDepartment(result.department.departmentID);
+                    GetAllRole(result.account.accountRoles[0].roleID);
+                }
+            });
+        }
+
+        $("#updatepersonForm").validate({
+            rules: {
+                nik: {
+                    required: true
+                },
+                ktp: {
+                    required: true,
+                    digits: true
+                },
+                firstName: {
+                    required: true
+                },
+                lastName: {
+                    required: true
+                },
+                phone: {
+                    required: true,
+                    digits: true,
+                },
+                birthDate: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                address: {
+                    required: true
+                },
+                joinDate: {
+                    required: true
+                },
+                department: {
+                    required: true
+                },
+            },
+            submitHandler: function (updatepersonForm) {
+                var form = $(updatepersonForm);
+
+                $.ajax({
+                    type: "POST",
+                    url: "put",
+                    data: form.serialize() + "&departmentID=" + sessionStorage.getItem("departmentID"),
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
+                    success: function (data) {
+                        load();
+                        $('#modal').modal('hide');
+                        Swal.fire(
+                            'Saved!',
+                            'Your data has been saved.',
+                            'success'
+                        )
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        console.log(sendData);
+                        $('#modal').modal('hide');
+                    },
+                });
+            }
+        });
+
+        function get() {
+            $('#modal').modal('show');
+            $('#nik').attr('readonly', true);
+            $('#ktp').attr('readonly', true);
+            $('#email').attr('readonly', true);
+            $('#joinDate').attr('readonly', true);
+            $('#departmentID').attr('readonly', true);
+            $('#departmentID').prop("disabled", true);
+            $('#roleID').attr('readonly', true);
+            $('#roleID').prop("disabled", true);
+        }
+
+        function GetAllDepartment(nik = null) {
+            $('#departmentID').html('');
+            $.ajax({
+                url: "../Department/Get",
+                type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+                    const dataDepartmentName = new Map();
+                    result.map(x => {
+                        dataDepartmentName.set(x.departmentID, x.departmentName);
+                    });
+                    dataDepartmentName.forEach((value, key) => {
+                        if (key == nik) {
+                            $('#departmentID').append(
+                                $('<option selected></option>').val(key).html(value)
+                            );
+                        }
+                        else {
+                            $('#departmentID').append(
+                                $('<option></option>').val(key).html(value)
+                            );
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        }
+
+        function GetAllRole(role = null) {
+            $('#roleID').html('');
+            $.ajax({
+                url: "../Role/Get",
+                type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+                    const dataRoleName = new Map();
+                    result.map(x => {
+                        dataRoleName.set(x.roleID, x.roleName);
+                    });
+                    dataRoleName.forEach((value, key) => {
+                        if (key == role) {
+                            $('#roleID').append(
+                                $('<option selected></option>').val(key).html(value)
+                            );
+                        }
+                        else {
+                            $('#roleID').append(
+                                $('<option></option>').val(key).html(value)
+                            );
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        }
+    </script>
+}

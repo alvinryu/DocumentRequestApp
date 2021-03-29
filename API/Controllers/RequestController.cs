@@ -29,7 +29,7 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "HR")]
         [HttpGet("GetRequestForHR")]
         public IActionResult GetRequestForHR()
         {
@@ -45,7 +45,6 @@ namespace API.Controllers
             }
         }
 
-        [AllowAnonymous]
         [HttpGet("GetRequestForEmployee")]
         public IActionResult GetRequestForEmployee(string NIK)
         {
@@ -61,7 +60,7 @@ namespace API.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "RM")]
         [HttpGet("GetRequestForRM")]
         public IActionResult GetRequestForRM(int DepartmentID)
         {
