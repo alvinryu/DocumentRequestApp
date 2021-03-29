@@ -7,6 +7,7 @@ namespace API.ViewModels
 {
     public class RequestVM
     {
+        public int RequestID { set; get; }
         public DateTime RequestDate { set; get; }
         public string Name { set; get; }
         public int TypeID { set; get; }

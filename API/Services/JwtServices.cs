@@ -34,7 +34,7 @@ namespace API.Services
                     new Claim(ClaimTypes.Email, loginVM.Email),
                     new Claim(ClaimTypes.Name, loginVM.FullName),
                     new Claim(ClaimTypes.Role, loginVM.RoleName),
-                    new Claim(ClaimTypes.GroupSid, loginVM.DepartmentID.ToString())
+                    new Claim("DepartmentID", loginVM.DepartmentID.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(double.Parse(_expDate)),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
