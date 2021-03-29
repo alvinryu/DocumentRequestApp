@@ -76,8 +76,8 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Roles = "HR")]
         [HttpPut("ApproveOrRejectByHR")]
-        [AllowAnonymous]
         public ActionResult ApproveOrRejectByHR(ApproveOrRejectVM approveReject)
         {
             var result = _requestRepository.ApproveOrRejectByHR(approveReject);
@@ -91,8 +91,8 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Roles = "RM")]
         [HttpPut("ApproveOrRejectByRM")]
-        [AllowAnonymous]
         public ActionResult ApproveOrRejectByRM(ApproveOrRejectVM approveReject)
         {
             var result = _requestRepository.ApproveOrRejectByRM(approveReject);

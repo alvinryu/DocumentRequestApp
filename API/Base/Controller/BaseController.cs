@@ -42,7 +42,7 @@ namespace API.Base.Controller
         }
 
         [HttpGet("{key}")]
-        public ActionResult<Entity> Get(Key key)
+        public virtual ActionResult<Entity> Get(Key key)
         {
             var result = repository.Get(key);
             if (result != null)

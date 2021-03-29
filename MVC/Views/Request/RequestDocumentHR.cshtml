@@ -155,7 +155,7 @@
 
         function ApproveOrRejectByHR(approve, requestID)
         {
-            var hR_NIK = 30;
+            var hR_NIK = sessionStorage.getItem("nik");
             //var approveHRDate = '2021-03-26T09:14:28.803Z';
             var approveHRDate = moment().format();
             swal.fire({
@@ -172,9 +172,9 @@
                         type: "POST",
                         url: "ApproveOrRejectByHR",
                         data: { 'approve': approve, 'requestID': requestID, 'hR_NIK': hR_NIK, 'approveHRDate': approveHRDate },
-                        //"beforeSend": function (xhr) {
-                        //    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
-                        //},
+                        "beforeSend": function (xhr) {
+                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        },
                         success: function (data) {
                             //Swal.fire(
                             //    'Deleted!',

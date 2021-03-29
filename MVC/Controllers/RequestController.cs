@@ -52,8 +52,10 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ApproveOrRejectByHR(ApproveOrRejectVM approveReject)
         {
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+
             StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
-            
             var response = await httpClient.PutAsync("Request/ApproveOrRejectByHR", content);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);
@@ -92,13 +94,13 @@ namespace MVC.Controllers
             string employeeApiResponse = await employeeResponse.Content.ReadAsStringAsync();
             var employeeResult = JsonConvert.DeserializeObject<ResponseVM<Person>>(employeeApiResponse);
 
-            var hrRole = hrResult.Data.Account.AccountRoles.ToList();
+            ICollection<AccountRole> hrRole = hrResult.Data.Account.AccountRoles.ToList();
             
             using var hrRoleResponse = await httpClient.GetAsync("Role/" + hrRole.FirstOrDefault().RoleID);
             string hrRoleApiResponse = await hrRoleResponse.Content.ReadAsStringAsync();
             var hrRoleResult = JsonConvert.DeserializeObject<ResponseVM<Role>>(hrRoleApiResponse);
 
-            var employeeRole = employeeResult.Data.Account.AccountRoles.ToList();
+            ICollection<AccountRole> employeeRole = employeeResult.Data.Account.AccountRoles.ToList();
 
             using var employeeRoleResponse = await httpClient.GetAsync("Role/" + employeeRole.FirstOrDefault().RoleID);
             string employeeRoleApiResponse = await employeeRoleResponse.Content.ReadAsStringAsync();
@@ -113,8 +115,8 @@ namespace MVC.Controllers
                 Employee_Name = employeeResult.Data.FirstName + " " + employeeResult.Data.LastName,
                 Employee_Role = employeeRoleResult.Data.RoleName,
                 Employee_Department = employeeResult.Data.Department.DepartmentName,
-                Employee_JoinDate = employeeResult.Data.JoinDate.ToShortDateString(),
-                ApprovalHRDate = detailRequestResult.Data.ApproveHRDate.ToShortDateString(),
+                Employee_JoinDate = employeeResult.Data.JoinDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID")),
+                ApprovalHRDate = detailRequestResult.Data.ApproveHRDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID")),
                 DocumentType = requestResult.Data.DocumentType.TypeName
             };
 
@@ -132,8 +134,10 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ApproveOrRejectByRM(ApproveOrRejectVM approveReject)
         {
-            StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
+            var header = Request.Headers["Authorization"];
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
 
+            StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync("Request/ApproveOrRejectByRM", content);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);

@@ -14,9 +14,6 @@
         <button id="add" class="mb-3 btn btn-primary text-center" data-toggle="modal" data-target="#modal" onclick="resetUpdate()">
             <i class="fas fa-user-plus"></i> Add Request Document
         </button>
-        <button id="document" class="mb-3 btn btn-primary text-center" onclick="doc()">
-            <i class="fas fa-user-plus"></i> Print Request Document
-        </button>
     </div>
     <div>
         <table id="table_id" class="table table-sm table-striped table-bordered m-2">
@@ -24,14 +21,13 @@
                 <tr>
                     <th>No</th>
                     <th>Request Date</th>
-                    <th>Name</th>
-                    <th>TypeID</th>
                     <th>TypeName</th>
                     <th>ApproveRM</th>
                     <th>ApproveHR</th>
-                    <th>HR NIK</th>
+                    <th>HR Name</th>
                     <th>Approve RM Date</th>
                     <th>Approve HR Date</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,14 +36,13 @@
                 <tr>
                     <th>No</th>
                     <th>Request Date</th>
-                    <th>Name</th>
-                    <th>TypeID</th>
                     <th>TypeName</th>
                     <th>ApproveRM</th>
                     <th>ApproveHR</th>
-                    <th>HR NIK</th>
+                    <th>HR Name</th>
                     <th>Approve RM Date</th>
                     <th>Approve HR Date</th>
+                    <th>Action</th>
                 </tr>
             </tfoot>
         </table>
@@ -67,18 +62,9 @@
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
-                                <span id="spanID"></span>
-                                <label for="personNIK" class="col-form-label">Person NIK:</label>
-                                <input type="text" class="form-control" id="personNIK" name="personNIK">
-                            </div>
-                            <div class="form-group">
                                 <label for="documentTypeTypeID" class="col-form-label">Document Type:</label>
                                 <select class="form-control" id="documentTypeTypeID" name="documentTypeTypeID">
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="requestDate" class="col-form-label">Request Date:</label>
-                                <input type="date" class="form-control" id="requestDate" name="requestDate">
                             </div>
                         </div>
                     </div>
@@ -102,13 +88,13 @@
                     {
                         extend: 'csv',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7]
                         }
                     },
                     {
@@ -118,7 +104,7 @@
                         pageSize: 'A4', //formato stampa
                         alignment: "center",
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7]
                         },
                         customize: function (doc) {
                             doc.styles.tableHeader.alignment = 'left'; //giustifica a sinistra titoli colonne
@@ -150,22 +136,46 @@
                             return moment(data).format('YYYY-MM-DD');
                         }
                     },
-                    { "data": 'name' },
-                    { "data": 'typeID' },
                     { "data": 'typeName' },
-                    { "data": 'approveRM' },
-                    { "data": 'approveHR' },
-                    { "data": 'hR_NIK' },
+                    {
+                        "data": 'approveRM',
+                        render: function (data) {
+                            if (data === 0)
+                                return "Reject";
+                            else if (data === 1)
+                                return "Approve";
+                            return "Pending";
+                        }
+                    },
+                    {
+                        "data": 'approveHR',
+                        render: function (data) {
+                            if (data === 0)
+                                return "Reject";
+                            else if (data === 1)
+                                return "Approve";
+                            return "Pending";
+                        }
+                    },
+                    { "data": 'hR_Name' },
                     {
                         "data": 'approveRMDate',
                         render: function (data) {
-                            return moment(data).format('YYYY-MM-DD');
+                            var d = new Date(data);
+                            return (d.getFullYear() != "1900") ? moment(data).format('YYYY-MM-DD') : "Pending";
                         }
                     },
                     {
                         "data": 'approveHRDate',
                         render: function (data) {
-                            return moment(data).format('YYYY-MM-DD');
+                            var d = new Date(data);
+                            return (d.getFullYear() != "1900") ? moment(data).format('YYYY-MM-DD') : "Pending";
+                        }
+                    },
+                    {
+                        "data": 'id',
+                        "render": function (data, type, row, meta) {
+                            return (row['approveRM'] == 1 && row['approveHR'] == 1) ? '<a class="btn btn-primary" onclick="doc(\'' + row['requestID'] + '\')"><i class ="fas fa-download"></i> Download</a> ' : "";
                         }
                     }
                 ]
@@ -180,12 +190,73 @@
 
         function resetUpdate() {
             $('#reqDocForm').trigger('reset');
+            GetAllDocumentType();
         }
 
-        function doc() {
+        function GetAllDocumentType() {
+            $.ajax({
+                url: "../DocumentType/Get",
+                type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data;
+                    const dataDocumentType = new Map();
+                    result.map(x => {
+                        dataDocumentType.set(x.typeID, x.typeName);
+                    });
+                    dataDocumentType.forEach((value, key) => {
+                        $('#documentTypeTypeID').append(
+                            $('<option></option>').val(key).html(value)
+                        );
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        }
+
+        $("#reqDocForm").validate({
+            rules: {
+                documentTypeTypeID: {
+                    required: true
+                }
+            },
+            submitHandler: function (reqDocForm) {
+                var form = $(reqDocForm);
+                const timeElapsed = Date.now();
+                const today = new Date(timeElapsed);
+                $.ajax({
+                    type: "POST",
+                    url: "post",
+                    data: form.serialize() + "&personNIK=" + sessionStorage.getItem("nik") + "&requestDate=" + today.toLocaleDateString(),
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    },
+                    success: function (data) {
+                        $('#modal').modal('hide');
+                        Swal.fire(
+                            'Saved!',
+                            'Your Request has been saved.',
+                            'success'
+                        )
+                        $('#table_id').DataTable().ajax.reload();
+                    },
+                    error: function (error) {
+                        alert('error;');
+                        $('#modal').modal('hide');
+                        $('#table_id').DataTable().ajax.reload();
+                    },
+                });
+            }
+        });
+
+        function doc(requestID) {
             var request = new XMLHttpRequest();
             request.responseType = "blob";
-            request.open("GET", "Doc/?RequestID=1");
+            request.open("GET", "Doc/?RequestID=" + requestID);
             request.setRequestHeader('Authorization', sessionStorage.getItem("token"));
             request.onload = function () {
                 var url = window.URL.createObjectURL(this.response);
