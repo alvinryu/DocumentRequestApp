@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using System.IO;
 using Wkhtmltopdf.NetCore;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace MVC.Controllers
 {
@@ -24,13 +25,12 @@ namespace MVC.Controllers
         }
 
         public ViewResult RequestDocumentEmployee() => View();
-        public ViewResult RequestDocumentHR() => View();
-        public ViewResult RequestDocumentRM() => View();
+        //public ViewResult RequestDocumentHR() => View();
+        //public ViewResult RequestDocumentRM() => View();
 
         public async Task<JsonResult> GetRequestDocumentEmployee(string NIK)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             using var response = await httpClient.GetAsync("Request/GetRequestForEmployee/?NIK="+NIK);
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -40,8 +40,7 @@ namespace MVC.Controllers
 
         public async Task<JsonResult> GetRequestForHR()
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             using var response = await httpClient.GetAsync("Request/GetRequestForHR");
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -52,8 +51,7 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ApproveOrRejectByHR(ApproveOrRejectVM approveReject)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync("Request/ApproveOrRejectByHR", content);
@@ -64,8 +62,7 @@ namespace MVC.Controllers
 
         public async Task<JsonResult> GetRequestForRM(int DepartmentID)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             using var response = await httpClient.GetAsync("Request/GetRequestForRM/?DepartmentID="+ DepartmentID);
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -75,8 +72,7 @@ namespace MVC.Controllers
 
         public async Task<FileStreamResult> Doc(int RequestID)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             var requestResponse = await GetById(RequestID);
             var requestApiResponse = JsonConvert.SerializeObject(requestResponse.Value);
@@ -134,14 +130,28 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ApproveOrRejectByRM(ApproveOrRejectVM approveReject)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(approveReject), Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync("Request/ApproveOrRejectByRM", content);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);
             return new JsonResult(result);
+        }
+
+        public ViewResult Index()
+        {
+            return (HttpContext.Session.GetString("role") == "HR") ? View() : View("../Authorize/NotAuthorized");
+        }
+
+        public ViewResult RequestDocumentHR()
+        {
+            return (HttpContext.Session.GetString("role") == "HR") ? View() : View("../Authorize/NotAuthorized");
+        }
+
+        public ViewResult RequestDocumentRM()
+        {
+            return (HttpContext.Session.GetString("role") == "RM") ? View() : View("../Authorize/NotAuthorized");
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Models;
 using API.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Base;
 using Newtonsoft.Json;
@@ -18,8 +19,7 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> UpdateAccountRole(AccountRole accountRole)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(accountRole), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync("AccountRole/UpdateAccountRole", content);

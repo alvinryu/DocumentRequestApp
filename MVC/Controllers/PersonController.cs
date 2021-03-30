@@ -1,5 +1,6 @@
 ﻿using API.Models;
 using API.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Base;
 using Newtonsoft.Json;
@@ -20,8 +21,7 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> CheckPersonByEmail(string Email)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
             StringContent content = new StringContent(JsonConvert.SerializeObject(Email), Encoding.UTF8, "application/json");
 
             using var response = await httpClient.PostAsync("Person/CheckEmail/?Email=" + Email, content);
@@ -33,8 +33,7 @@ namespace MVC.Controllers
         [HttpPost]
         public async Task<JsonResult> CheckPersonByKTP(string KTP)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(KTP), Encoding.UTF8, "application/json");
             using var response = await httpClient.PostAsync("Person/CheckKTP/?KTP=" + KTP, content);
@@ -43,6 +42,7 @@ namespace MVC.Controllers
             return new JsonResult(result);
         }
 
+        public ViewResult Index() => View();
         public ViewResult Profile() => View();
     }
 }

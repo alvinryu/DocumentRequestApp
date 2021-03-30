@@ -126,7 +126,7 @@
                     "data": "result",
                     "dataType": "json",
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     }
                 },
                 "columnDefs": [
@@ -191,7 +191,7 @@
                     url: urlString,
                     data: form.serialize(),
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     },
                     success: function (data) {
                         $('#modal').modal('hide');
@@ -216,7 +216,7 @@
                 url: "DocumentType/Get",
                 type: "GET",
                 "beforeSend": function (xhr) {
-                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                 },
                 success: function (data) {
                     var result = (JSON.parse(JSON.stringify(data))).data;
@@ -244,7 +244,7 @@
                 type: "GET",
                 data: { 'key': requestID },
                 "beforeSend": function (xhr) {
-                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                 },
                 success: function (data) {
                     $('#modal').modal('show');
@@ -280,7 +280,7 @@
                         url: "request/Delete",
                         data: { 'key': requestID },
                         "beforeSend": function (xhr) {
-                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                            xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                         },
                         success: function (data) {
                             Swal.fire(

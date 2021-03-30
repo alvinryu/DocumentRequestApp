@@ -192,7 +192,7 @@
                         url: "ApproveOrRejectByHR",
                         data: { 'approve': approve, 'requestID': requestID, 'hR_NIK': hR_NIK, 'approveHRDate': approveHRDate },
                         "beforeSend": function (xhr) {
-                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                            xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                         },
                         success: function (data) {
                             //Swal.fire(

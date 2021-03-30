@@ -120,7 +120,7 @@
                     "data": { "NIK": sessionStorage.getItem("nik") },
                     "dataType": "json",
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.token);
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     }
                 },
                 "columnDefs": [

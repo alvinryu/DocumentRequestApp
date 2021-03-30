@@ -186,7 +186,7 @@
                 type: "GET",
                 data: { 'key': sessionStorage.getItem("nik") },
                 "beforeSend": function (xhr) {
-                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                 },
                 success: function (data) {
                     var result = (JSON.parse(JSON.stringify(data))).data;
@@ -261,7 +261,7 @@
                     url: "put",
                     data: form.serialize() + "&departmentID=" + sessionStorage.getItem("departmentID"),
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     },
                     success: function (data) {
                         load();
@@ -299,7 +299,7 @@
                 url: "../Department/Get",
                 type: "GET",
                 "beforeSend": function (xhr) {
-                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                 },
                 success: function (data) {
                     var result = (JSON.parse(JSON.stringify(data))).data;
@@ -332,7 +332,7 @@
                 url: "../Role/Get",
                 type: "GET",
                 "beforeSend": function (xhr) {
-                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                 },
                 success: function (data) {
                     var result = (JSON.parse(JSON.stringify(data))).data;

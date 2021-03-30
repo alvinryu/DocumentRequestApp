@@ -190,7 +190,7 @@
                         url: "ApproveOrRejectByRM",
                         data: { 'approve': approve, 'requestID': requestID, 'approveRMDate': approveRMDate },
                         "beforeSend": function (xhr) {
-                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                            xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                         },
                         success: function (data) {
                             //Swal.fire(

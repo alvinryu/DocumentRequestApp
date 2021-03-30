@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Models;
 using API.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Base;
 using Newtonsoft.Json;
@@ -24,6 +26,15 @@ namespace MVC.Controllers
             var response = await httpClient.PostAsync("Account/Login", content);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseTokenVM>(apiResponse);
+
+            if(result.Status == "200")
+            {
+                HttpContext.Session.SetString("token", result.Token);
+                var jsonToken = new JwtSecurityTokenHandler().ReadJwtToken(HttpContext.Session.GetString("token"));
+                var role = jsonToken.Claims.First(claim => claim.Type == "role").Value;
+                HttpContext.Session.SetString("role", role);
+            }
+
             return new JsonResult(result);
         }
 
