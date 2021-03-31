@@ -23,6 +23,7 @@
                     <th>Department ID</th>
                     <th>Department Name</th>
                     <th>Manager NIK</th>
+                    <th>HR NIK</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -34,6 +35,7 @@
                     <th>Department ID</th>
                     <th>Department Name</th>
                     <th>Manager NIK</th>
+                    <th>HR NIK</th>
                     <th>Actions</th>
                 </tr>
             </tfoot>
@@ -62,6 +64,10 @@
                                 <label for="manager_NIK" class="col-form-label">Manager NIK:</label>
                                 <input type="text" class="form-control" id="manager_NIK" name="manager_NIK">
                             </div>
+                            <div class="form-group">
+                                <label for="hR_NIK" class="col-form-label">HR NIK:</label>
+                                <input type="text" class="form-control" id="hR_NIK" name="hR_NIK">
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -86,13 +92,13 @@
                     {
                         extend: 'csv',
                         exportOptions: {
-                            columns: [1, 2, 3]
+                            columns: [1, 2, 3, 4]
                         }
                     },
                     {
                         extend: 'excel',
                         exportOptions: {
-                            columns: [1, 2, 3]
+                            columns: [1, 2, 3, 4]
                         }
                     },
                     {
@@ -102,7 +108,7 @@
                         pageSize: 'A4', //formato stampa
                         alignment: "center",
                         exportOptions: {
-                            columns: [1, 2, 3]
+                            columns: [1, 2, 3, 4]
                         },
                         customize: function (doc) {
                             doc.styles.tableHeader.alignment = 'left'; //giustifica a sinistra titoli colonne
@@ -127,7 +133,7 @@
                         "visible": false,
                     },
                     {
-                        "targets": [4],
+                        "targets": [5],
                         "orderable": false,
                         "searchable": false
                     }
@@ -140,6 +146,7 @@
                     { "data": 'departmentID' },
                     { "data": 'departmentName' },
                     { "data": 'manager_NIK' },
+                    { "data": 'hR_NIK' },
                     {
                         "data": 'id',
                         "render": function (data, type, row, meta) {
@@ -163,6 +170,9 @@
                     required: true
                 },
                 manager_NIK: {
+                    required: true
+                },
+                hR_NIK: {
                     required: true
                 }
             },
@@ -214,6 +224,7 @@
                     $('#departmentID').val(result.departmentID);
                     $('#departmentName').val(result.departmentName);
                     $('#manager_NIK').val(result.manager_NIK);
+                    $('#hR_NIK').val(result.hR_NIK);
                     isUpdate = 1;
                 }
             });

@@ -12,5 +12,6 @@ namespace API.ViewModels
         public int HR_NIK { set; get; } 
         public DateTime ApproveHRDate { set; get; }
         public DateTime ApproveRMDate { set; get; }
+        public string Email { set; get; }
     }
 }

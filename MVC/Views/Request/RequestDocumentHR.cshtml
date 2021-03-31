@@ -24,6 +24,7 @@
                     <th>HR NIK</th>
                     <th>Approve RM Date</th>
                     <th>Approve HR Date</th>
+                    <th>Email</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -41,6 +42,7 @@
                     <th>HR NIK</th>
                     <th>Approve RM Date</th>
                     <th>Approve HR Date</th>
+                    <th>Email</th>
                     <th>Action</th>
                 </tr>
             </tfoot>
@@ -102,7 +104,11 @@
                         "targets": [1],
                         "orderable": false,
                         "searchable": false
-                    }
+                    },
+                    {
+                        "targets": [10],
+                        "visible": false,
+                    },
                 ],
                 "columns": [
                     {
@@ -152,14 +158,17 @@
                         }
                     },
                     {
+                        "data": 'email'
+                    },
+                    {
                         "data": 'approveHR',
                         "render": function (data, type, row, meta) {
                             if (data === 2)
-                                return ('<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Approve" onclick="ApproveOrRejectByHR(1,\'' + row['requestID'] + '\')"><i class ="far fa-edit"></i> Approve</a> ' +
-                                    '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Reject" onclick="ApproveOrRejectByHR(0,\'' + row['requestID'] + '\')"><i class ="far fa-trash-alt"></i> Reject</button>');
+                                return ('<a class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Approve" onclick="ApproveOrRejectByHR(1,\'' + row['requestID'] + '\', \'' + row['email'] + '\')"><i class ="far fa-edit"></i> Approve</a> ' +
+                                    '<button class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Reject" onclick="ApproveOrRejectByHR(0,\'' + row['requestID'] + '\',  \'' + row['email'] + '\')"><i class ="far fa-trash-alt"></i> Reject</button>');
 
-                            return ('<button disabled class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Approve" onclick="ApproveOrRejectByHR(1,\'' + row['requestID'] + '\')"><i class ="far fa-edit"></i> Approve</button> ' +
-                                    '<button disabled class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Reject" onclick="ApproveOrRejectByHR(0,\'' + row['requestID'] + '\')"><i class ="far fa-trash-alt"></i> Reject</button>');
+                            return ('<button disabled class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Approve" onclick="ApproveOrRejectByHR(1,\'' + row['requestID'] + '\',  \'' + row['email'] + '\')"><i class ="far fa-edit"></i> Approve</button> ' +
+                                    '<button disabled class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Reject" onclick="ApproveOrRejectByHR(0,\'' + row['requestID'] + '\',  \'' + row['email'] + '\')"><i class ="far fa-trash-alt"></i> Reject</button>');
                         }
                     }
                 ]
@@ -172,7 +181,7 @@
             }).draw();
        });
 
-        function ApproveOrRejectByHR(approve, requestID)
+        function ApproveOrRejectByHR(approve, requestID, email)
         {
             var hR_NIK = sessionStorage.getItem("nik");
             //var approveHRDate = '2021-03-26T09:14:28.803Z';
@@ -190,7 +199,7 @@
                     $.ajax({
                         type: "POST",
                         url: "ApproveOrRejectByHR",
-                        data: { 'approve': approve, 'requestID': requestID, 'hR_NIK': hR_NIK, 'approveHRDate': approveHRDate },
+                        data: { 'approve': approve, 'requestID': requestID, 'hR_NIK': hR_NIK, 'approveHRDate': approveHRDate, 'email': email },
                         "beforeSend": function (xhr) {
                             xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
                         },
