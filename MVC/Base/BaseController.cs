@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using API.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -24,13 +25,12 @@ namespace MVC.Base
             };
         }
 
-        public ViewResult Index() => View();
+        //public ViewResult Index() => View();
 
         public async Task<JsonResult> Get()
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
-
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
+            
             using var response = await httpClient.GetAsync(typeof(Entity).Name);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<IEnumerable<Entity>>>(apiResponse);
@@ -39,8 +39,7 @@ namespace MVC.Base
 
         public async Task<JsonResult> GetById(Key key)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             var response = await httpClient.GetAsync(typeof(Entity).Name + "/" + key);
             string apiResponse = await response.Content.ReadAsStringAsync();
@@ -51,8 +50,7 @@ namespace MVC.Base
         [HttpPost]
         public async virtual Task<JsonResult> Post(Entity entity)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(entity), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync(typeof(Entity).Name, content);
@@ -64,8 +62,7 @@ namespace MVC.Base
         [HttpPost]
         public async Task<JsonResult> Put(Entity entity)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(entity), Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync(typeof(Entity).Name, content);
@@ -77,8 +74,7 @@ namespace MVC.Base
         [HttpPost]
         public async Task<JsonResult> Delete(Key key)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             using var response = await httpClient.DeleteAsync(typeof(Entity).Name + '/' + key);
             string apiResponse = await response.Content.ReadAsStringAsync();

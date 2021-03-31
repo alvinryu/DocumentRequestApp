@@ -142,7 +142,7 @@
                     "data": "result",
                     "dataType": "json",
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     }
                 },
                 "columnDefs": [
@@ -223,7 +223,7 @@
                     url: urlString,
                     data: form.serialize(),
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     },
                     success: function (data) {
                         $('#modal').modal('hide');
@@ -250,7 +250,7 @@
                 type: "GET",
                 data: { 'key': requestID },
                 "beforeSend": function (xhr) {
-                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                 },
                 success: function (data) {
                     $('#modal').modal('show');
@@ -287,7 +287,7 @@
                         url: "detailrequest/Delete",
                         data: { 'key': requestID },
                         "beforeSend": function (xhr) {
-                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                            xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                         },
                         success: function (data) {
                             Swal.fire(

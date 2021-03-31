@@ -200,7 +200,7 @@
                         url: "ApproveOrRejectByRM",
                         data: { 'approve': approve, 'hR_NIK': RM_NIK, 'requestID': requestID, 'approveRMDate': approveRMDate, 'email': email},
                         "beforeSend": function (xhr) {
-                            xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                            xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                         },
                         success: function (data) {
                             //Swal.fire(
