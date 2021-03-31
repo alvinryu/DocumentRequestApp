@@ -18,5 +18,6 @@ namespace API.ViewModels
         public string HR_Name { set; get; }
         public DateTime ApproveRMDate { set; get; }
         public DateTime ApproveHRDate { set; get; }
+        public string Email { set; get; }
     }
 }

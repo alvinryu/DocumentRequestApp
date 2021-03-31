@@ -38,9 +38,9 @@ namespace MVC.Controllers
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponse);
 
-            using var responsePerson = await httpClient.GetAsync("Person/" + result.Data.PersonNIK);
-            string apiResponsePerson = await response.Content.ReadAsStringAsync();
-            var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponse);
+            using var responsePerson = await httpClient.GetAsync("Person/" + request.PersonNIK);
+            string apiResponsePerson = await responsePerson.Content.ReadAsStringAsync();
+            var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePerson);
 
             using var rmResponse = await httpClient.GetAsync("Person/" + resultPerson.Data.Department.Manager_NIK);
             string rmApiResponse = await rmResponse.Content.ReadAsStringAsync();
@@ -182,16 +182,16 @@ namespace MVC.Controllers
             var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);
 
             using var responsePerson = await httpClient.GetAsync("Person/" + approveReject.HR_NIK);
-            string apiResponsePerson = await response.Content.ReadAsStringAsync();
-            var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponse);
+            string apiResponsePerson = await responsePerson.Content.ReadAsStringAsync();
+            var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePerson);
 
-            using var responseDepartment = await httpClient.GetAsync("Department/" + resultPerson.Data.DepartmentID);
-            string apiResponseDepartment = await responseDepartment.Content.ReadAsStringAsync();
-            var departmentResult = JsonConvert.DeserializeObject<ResponseVM<Department>>(apiResponseDepartment);
+            //using var responseDepartment = await httpClient.GetAsync("Department/" + resultPerson.Data.DepartmentID);
+            //string apiResponseDepartment = await responseDepartment.Content.ReadAsStringAsync();
+            //var departmentResult = JsonConvert.DeserializeObject<ResponseVM<Department>>(apiResponseDepartment);
 
-            using var responsePersonHR = await httpClient.GetAsync("Person/" + departmentResult.Data.HR_NIK);
-            string apiResponsePersonHR = await response.Content.ReadAsStringAsync();
-            var resultPersonHR = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponse);
+            using var responsePersonHR = await httpClient.GetAsync("Person/" + resultPerson.Data.Department.HR_NIK);
+            string apiResponsePersonHR = await responsePersonHR.Content.ReadAsStringAsync();
+            var resultPersonHR = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePersonHR);
 
             var emailHR = resultPersonHR.Data.Email;
 
