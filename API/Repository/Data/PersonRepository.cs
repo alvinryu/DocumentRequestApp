@@ -36,5 +36,21 @@ namespace API.Repository.Data
             var result = _personRepository.Query("SP_GetPersonByKTP", _parameters);
             return result;
         }
+
+        public IEnumerable<Person> GetAllRM()
+        {
+            var _personRepository = new GeneralDapperRepository<Person>(_configuration);
+
+            var result = _personRepository.Get("SP_GetAllRM");
+            return result;
+        }
+
+        public IEnumerable<Person> GetAllHR()
+        {
+            var _personRepository = new GeneralDapperRepository<Person>(_configuration);
+
+            var result = _personRepository.Get("SP_GetAllHR");
+            return result;
+        }
     }
 }

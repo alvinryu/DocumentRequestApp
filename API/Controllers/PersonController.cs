@@ -58,5 +58,35 @@ namespace API.Controllers
                 return NotFound(new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", data = "" });
             }
         }
+
+        [HttpGet("GetAllRM")]
+        public IActionResult GetAllRM()
+        {
+            var result = _personRepository.GetAllRM();
+
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = result, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return NotFound(new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", data = "" });
+            }
+        }
+
+        [HttpGet("GetAllHR")]
+        public IActionResult GetAllHR()
+        {
+            var result = _personRepository.GetAllHR();
+
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = result, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return NotFound(new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", data = "" });
+            }
+        }
     }
 }
