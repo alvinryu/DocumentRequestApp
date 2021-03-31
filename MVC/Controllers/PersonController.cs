@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC.Base;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -44,5 +45,25 @@ namespace MVC.Controllers
 
         public ViewResult Index() => View();
         public ViewResult Profile() => View();
+
+        public async Task<JsonResult> GetAllRM()
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
+
+            using var response = await httpClient.GetAsync("Person/GetAllRM");
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<IEnumerable<Person>>>(apiResponse);
+            return new JsonResult(result);
+        }
+
+        public async Task<JsonResult> GetAllHR()
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
+
+            using var response = await httpClient.GetAsync("Person/GetAllHR");
+            string apiResponse = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ResponseVM<IEnumerable<Person>>>(apiResponse);
+            return new JsonResult(result);
+        }
     }
 }

@@ -231,14 +231,14 @@
             },
             submitHandler: function (reqDocForm) {
                 var form = $(reqDocForm);
-                const timeElapsed = Date.now();
-                const today = new Date(timeElapsed);
+                var timeElapsed = Date.now();
+                var today = new Date(timeElapsed);
                 $.ajax({
                     type: "POST",
                     url: "post",
                     data: form.serialize() + "&personNIK=" + sessionStorage.getItem("nik") + "&requestDate=" + today.toLocaleDateString(),
                     "beforeSend": function (xhr) {
-                        xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                        xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
                     },
                     success: function (data) {
                         $('#modal').modal('hide');

@@ -30,17 +30,16 @@ namespace MVC.Controllers
 
         public async override Task<JsonResult> Post(Request request)
         {
-            var header = Request.Headers["Authorization"];
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", header);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
             StringContent content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync("Request", content);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponse);
 
-            using var responsePerson = await httpClient.GetAsync("Person/" + result.Data.PersonNIK);
-            string apiResponsePerson = await response.Content.ReadAsStringAsync();
-            var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponse);
+            using var responsePerson = await httpClient.GetAsync("Person/" + request.PersonNIK);
+            string apiResponsePerson = await responsePerson.Content.ReadAsStringAsync();
+            var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePerson);
 
             using var rmResponse = await httpClient.GetAsync("Person/" + resultPerson.Data.Department.Manager_NIK);
             string rmApiResponse = await rmResponse.Content.ReadAsStringAsync();

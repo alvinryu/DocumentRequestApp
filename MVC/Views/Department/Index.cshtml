@@ -62,11 +62,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="manager_NIK" class="col-form-label">Manager NIK:</label>
-                                <input type="text" class="form-control" id="manager_NIK" name="manager_NIK">
+                                @*<input type="text" class="form-control" id="manager_NIK" name="manager_NIK">*@
+                                <select class="form-control" id="manager_NIK" name="manager_NIK"></select>
                             </div>
                             <div class="form-group">
                                 <label for="hR_NIK" class="col-form-label">HR NIK:</label>
-                                <input type="text" class="form-control" id="hR_NIK" name="hR_NIK">
+                                @*<input type="text" class="form-control" id="hR_NIK" name="hR_NIK">*@
+                                <select class="form-control" id="hR_NIK" name="hR_NIK"></select>
                             </div>
                         </div>
                     </div>
@@ -225,6 +227,9 @@
                     $('#departmentName').val(result.departmentName);
                     $('#manager_NIK').val(result.manager_NIK);
                     $('#hR_NIK').val(result.hR_NIK);
+
+                    GetAllRM(result.manager_NIK);
+                    GetAllHR(result.hR_NIK);
                     isUpdate = 1;
                 }
             });
@@ -232,6 +237,8 @@
 
         function resetUpdate() {
             isUpdate = 0;
+            GetAllRM();
+            GetAllHR();
             $("#spanID").empty();
             $('#departmentForm').trigger('reset');
         }
@@ -269,6 +276,72 @@
                     });
                 }
             })
+        }
+
+        function GetAllRM(rmnik = null) {
+            $('#manager_NIK').html('');
+            $.ajax({
+                url: "Person/GetAllRM",
+                type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data; console.log(result);
+                    const dataRMName = new Map();
+                    result.map(x => {
+                        dataRMName.set(x.nik, x.firstName);
+                    });
+                    dataRMName.forEach((value, key) => {
+                        if (key == rmnik) {
+                            $('#manager_NIK').append(
+                                $('<option selected></option>').val(key).html(value)
+                            );
+                        }
+                        else {
+                            $('#manager_NIK').append(
+                                $('<option></option>').val(key).html(value)
+                            );
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        }
+
+        function GetAllHR(hrnik = null) {
+            $('#hR_NIK').html('');
+            $.ajax({
+                url: "Person/GetAllHR",
+                type: "GET",
+                "beforeSend": function (xhr) {
+                    xhr.setRequestHeader('Authorization', sessionStorage.getItem("token"));
+                },
+                success: function (data) {
+                    var result = (JSON.parse(JSON.stringify(data))).data;console.log(result);
+                    const dataHRName = new Map();
+                    result.map(x => {
+                        dataHRName.set(x.nik, x.firstName);
+                    });
+                    dataHRName.forEach((value, key) => {
+                        if (key == hrnik) {
+                            $('#hR_NIK').append(
+                                $('<option selected></option>').val(key).html(value)
+                            );
+                        }
+                        else {
+                            $('#hR_NIK').append(
+                                $('<option></option>').val(key).html(value)
+                            );
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
         }
     </script>
 }
