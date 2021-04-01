@@ -31,9 +31,9 @@ namespace API.Controllers
 
         [Authorize(Roles = "HR")]
         [HttpGet("GetRequestForHR")]
-        public IActionResult GetRequestForHR()
+        public IActionResult GetRequestForHR(string NIK)
         {
-            var result = _requestRepository.GetRequestForHR();
+            var result = _requestRepository.GetRequestForHR(NIK);
 
             if (result != null)
             {

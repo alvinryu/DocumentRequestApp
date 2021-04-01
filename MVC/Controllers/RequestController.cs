@@ -64,11 +64,11 @@ namespace MVC.Controllers
             return new JsonResult(result);
         }
 
-        public async Task<JsonResult> GetRequestForHR()
+        public async Task<JsonResult> GetRequestForHR(string NIK)
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
 
-            using var response = await httpClient.GetAsync("Request/GetRequestForHR");
+            using var response = await httpClient.GetAsync("Request/GetRequestForHR/?NIK="+NIK);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<IEnumerable<RequestVM>>>(apiResponse);
             return new JsonResult(result);

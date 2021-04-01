@@ -19,6 +19,5 @@ namespace API.ViewModels
         public string Email { set; get; }
         public DateTime ApproveRMDate { set; get; }
         public DateTime ApproveHRDate { set; get; }
-        public string Email { set; get; }
     }
 }

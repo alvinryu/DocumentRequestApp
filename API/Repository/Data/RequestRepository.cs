@@ -20,11 +20,12 @@ namespace API.Repository.Data
             _configuration = configuration;
         }
 
-        public IEnumerable<RequestVM> GetRequestForHR()
+        public IEnumerable<RequestVM> GetRequestForHR(string NIK)
         {
             var _requestRepository = new GeneralDapperRepository<RequestVM>(_configuration);
+            _parameters.Add("@HR_NIK", NIK);
 
-            var result = _requestRepository.Get("SP_GetRequestForHR");
+            var result = _requestRepository.Get("SP_GetRequestForHR", _parameters);
             return result;
         }
 

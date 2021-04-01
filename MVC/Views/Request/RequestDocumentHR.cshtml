@@ -89,7 +89,7 @@
                 "ajax": {
                     "url": "GetRequestForHR",
                     "type": "get",
-                    "data": "result",
+                    "data": { "NIK": sessionStorage.getItem("nik") },
                     "dataType": "json",
                     "beforeSend": function (xhr) {
                         xhr.setRequestHeader('Authorization', "Bearer " + sessionStorage.getItem("token"));
