@@ -140,8 +140,12 @@ namespace MVC.Controllers
             string apiResponseRequest = await responseRequest.Content.ReadAsStringAsync();
             var resultRequest = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponseRequest);
 
+            using var responsePersonEmp = await httpClient.GetAsync("Person/" + resultRequest.Data.PersonNIK);
+            string apiResponsePersonEmp = await responsePersonEmp.Content.ReadAsStringAsync();
+            var resultPersonEmp = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePersonEmp);
+
             //email, isApproved, EmployeeName, Name, dateRespond, typeDoc
-            await ApprovalNotificationEmployeeAsync(approveReject.Email, approveReject.Approve, resultRequest.Data.Person.FirstName+" "+ resultRequest.Data.Person.LastName,
+            await ApprovalNotificationEmployeeAsync(approveReject.Email, approveReject.Approve, resultPersonEmp.Data.FirstName+" "+ resultPersonEmp.Data.LastName,
                 resultPersonHR.Data.FirstName+" "+resultPersonHR.Data.LastName, resultRequest.Data.RequestDate.ToString(), 
                 resultRequest.Data.DocumentType.TypeName);
 
@@ -254,8 +258,8 @@ namespace MVC.Controllers
             else if (approveReject.Approve == 0)
             {
                 //email, isApproved, EmployeeName, Name, dateRespond, typeDoc
-                await ApprovalNotificationEmployeeAsync(resultRequest.Data.Person.Email, approveReject.Approve,
-                   resultRequest.Data.Person.FirstName + " " + resultRequest.Data.Person.LastName, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName,
+                await ApprovalNotificationEmployeeAsync(resultPersonEmp.Data.Email, approveReject.Approve,
+                   resultPersonEmp.Data.FirstName + " " + resultPersonEmp.Data.LastName, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName,
                    resultRequest.Data.RequestDate.ToString(), resultRequest.Data.DocumentType.TypeName);
 
                 return "200";
