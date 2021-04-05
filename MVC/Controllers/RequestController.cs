@@ -28,6 +28,52 @@ namespace MVC.Controllers
         //public ViewResult RequestDocumentHR() => View();
         //public ViewResult RequestDocumentRM() => View();
 
+        string MessageSubject;
+        string MessageBody;
+
+        public async void ApprovalNotificationRM(string emailRM, string EmployeeName, string RMName, string dateRequest, string typeDoc)
+        {
+            MessageSubject = "New Document Request by " + EmployeeName;
+            MessageBody = "Dear Mr/Ms/Mrs " + RMName
+                + "<br><br>We would like to inform you that " + EmployeeName
+                + " has request a document for the purpose of " + typeDoc
+                + "'s administration on " + dateRequest + ". <br>We would like you to respond regarding the request on the HRIS on the Approval Document RM Section."
+                + " <br>Thank you<br><br>Best Regards<br>HRIS Administration";
+
+            var sendEmailVM = new SendEmailVM { Email = emailRM, MessageSubject = MessageSubject, MessageBody = MessageBody };
+            var sendEmailResult = await SendEmail(sendEmailVM);
+        }
+
+        public async void ApprovalNotificationHR(string emailHR, string EmployeeName, string RMName, string HRName, string dateRequest, string typeDoc)
+        {
+            MessageSubject = "New Document Request by " + EmployeeName;
+            MessageBody = "Dear Mr/Ms/Mrs " + HRName
+                + "<br><br>We would like to inform you that " + EmployeeName
+                + " has request a document for the purpose of " + typeDoc
+                + "'s administration on " + dateRequest
+                + ". The request has been approved by " + RMName + " as requester's RM. <br>"
+                + ". We would like you to respond regarding the request on the HRIS on the Approval Document HR Section."
+                + " <br>Thank you<br><br>Best Regards<br>HRIS Administration";
+
+            var sendEmailVM = new SendEmailVM { Email = emailHR, MessageSubject = MessageSubject, MessageBody = MessageBody };
+            var sendEmailResult = await SendEmail(sendEmailVM);
+        }
+
+        public async void ApprovalNotificationEmployee(string email, int isApproved, string EmployeeName, string Name, string dateRespond, string typeDoc)
+        {
+            MessageSubject = "Document Request " + ((isApproved == 0) ? "Rejected" : "Approved");
+            MessageBody = "Dear Mr/Ms/Mrs " + EmployeeName
+                + "<br><br>We would like to inform you that " + Name
+                + " had " + ((isApproved == 0) ? "rejected" : "approved") + " a document for the purpose of " + typeDoc
+                + "'s administration on " + dateRespond
+                + ". " + ((isApproved == 0) ? "" : "Please check on the HRIS on the Document Request Section to download the document")
+                + " <br>Thank you<br><br>Best Regards<br>HRIS Administration";
+
+            var sendEmailVM = new SendEmailVM { Email = email, MessageSubject = MessageSubject, MessageBody = MessageBody };
+            var sendEmailResult = await SendEmail(sendEmailVM);
+        }
+
+
         public async override Task<JsonResult> Post(Request request)
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("token"));
@@ -46,10 +92,12 @@ namespace MVC.Controllers
             var rmResult = JsonConvert.DeserializeObject<ResponseVM<Person>>(rmApiResponse);
             var emailRM = rmResult.Data.Email;
 
-            var mailSubject = "Document Request Notification";
-            var mailBody = "<h2>Your Employee has been request a document.</h2>" + "<br><br>Please check this request.";
-            var sendEmailVM = new SendEmailVM { Email = emailRM, MessageSubject = mailSubject, MessageBody = mailBody };
-            var sendEmailResult = await SendEmail(sendEmailVM);
+            using var docTypeResponse = await httpClient.GetAsync("DocumentType/" + request.DocumentTypeTypeID);
+            string docTypeApiResponse = await docTypeResponse.Content.ReadAsStringAsync();
+            var docResult = JsonConvert.DeserializeObject<ResponseVM<DocumentType>>(docTypeApiResponse);
+
+            ApprovalNotificationRM(emailRM, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName, rmResult.Data.FirstName+rmResult.Data.LastName, 
+                request.RequestDate.ToString(), docResult.Data.TypeName);
 
             return new JsonResult(result);
         }
@@ -83,24 +131,21 @@ namespace MVC.Controllers
             var response = await httpClient.PutAsync("Request/ApproveOrRejectByHR", content);
             string apiResponse = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<ResponseVM<ApproveOrRejectVM>>(apiResponse);
-            if (approveReject.Approve == 1)
-            {
-                var mailSubject = "Document Request Notification";
-                var mailBody = "<h2>Your Document Has Been Approved</h2>" + "<br><br>You can download this document.";
-                var sendEmailVM = new SendEmailVM { Email = approveReject.Email, MessageSubject = mailSubject, MessageBody = mailBody };
-                var sendEmailResult = await SendEmail(sendEmailVM);
 
-                return sendEmailResult.Status;
-            }else if (approveReject.Approve == 0){
-                var mailSubject = "Document Request Notification";
-                var mailBody = "<h2>Your Document Has Been Rejected</h2>" + "<br><br>Please contact your Manager for details.";
-                var sendEmailVM = new SendEmailVM { Email = approveReject.Email, MessageSubject = mailSubject, MessageBody = mailBody };
-                var sendEmailResult = await SendEmail(sendEmailVM);
+            using var responsePersonHR = await httpClient.GetAsync("Person/" + approveReject.HR_NIK);
+            string apiResponsePersonHR = await responsePersonHR.Content.ReadAsStringAsync();
+            var resultPersonHR = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePersonHR);
 
-                return sendEmailResult.Status;
-            }
+            using var responseRequest = await httpClient.GetAsync("Request/" + approveReject.RequestID);
+            string apiResponseRequest = await responseRequest.Content.ReadAsStringAsync();
+            var resultRequest = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponseRequest);
 
-            return "500";
+            //email, isApproved, EmployeeName, Name, dateRespond, typeDoc
+            ApprovalNotificationEmployee(approveReject.Email, approveReject.Approve, resultRequest.Data.Person.FirstName+" "+ resultRequest.Data.Person.LastName,
+                resultPersonHR.Data.FirstName+" "+resultPersonHR.Data.LastName, resultRequest.Data.RequestDate.ToString(), 
+                resultRequest.Data.DocumentType.TypeName);
+
+            return "200";
         }
 
         public async Task<JsonResult> GetRequestForRM(int DepartmentID)
@@ -184,33 +229,32 @@ namespace MVC.Controllers
             string apiResponsePerson = await responsePerson.Content.ReadAsStringAsync();
             var resultPerson = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePerson);
 
-            //using var responseDepartment = await httpClient.GetAsync("Department/" + resultPerson.Data.DepartmentID);
-            //string apiResponseDepartment = await responseDepartment.Content.ReadAsStringAsync();
-            //var departmentResult = JsonConvert.DeserializeObject<ResponseVM<Department>>(apiResponseDepartment);
-
             using var responsePersonHR = await httpClient.GetAsync("Person/" + resultPerson.Data.Department.HR_NIK);
             string apiResponsePersonHR = await responsePersonHR.Content.ReadAsStringAsync();
             var resultPersonHR = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePersonHR);
-
             var emailHR = resultPersonHR.Data.Email;
+
+            using var responseRequest = await httpClient.GetAsync("Request/" + approveReject.RequestID);
+            string apiResponseRequest = await responseRequest.Content.ReadAsStringAsync();
+            var resultRequest = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponseRequest);
 
             if (approveReject.Approve == 1)
             {
-                var mailSubject = "Document Request Notification";
-                var mailBody = "<h2>A Manager Has Been Approved A Document Request</h2>" + "<br><br>Please check this document.";
-                var sendEmailVM = new SendEmailVM { Email = emailHR, MessageSubject = mailSubject, MessageBody = mailBody };
-                var sendEmailResult = await SendEmail(sendEmailVM);
+                //emailHR, EmployeeName, RMName, HRName, dateRequest, typeDoc
+                ApprovalNotificationHR(emailHR, resultRequest.Data.Person.FirstName+" "+ resultRequest.Data.Person.LastName, 
+                    resultPerson.Data.FirstName + " " + resultPerson.Data.LastName, resultPersonHR.Data.FirstName + " " + resultPersonHR.Data.LastName, 
+                    resultRequest.Data.RequestDate.ToString(), resultRequest.Data.DocumentType.TypeName);
 
-                return sendEmailResult.Status;
+                return "200";
             }
             else if (approveReject.Approve == 0)
             {
-                var mailSubject = "Document Request Notification";
-                var mailBody = "<h2>Your Document Has Been Rejected</h2>" + "<br><br>Please contact your Manager for details.";
-                var sendEmailVM = new SendEmailVM { Email = approveReject.Email, MessageSubject = mailSubject, MessageBody = mailBody };
-                var sendEmailResult = await SendEmail(sendEmailVM);
+                //email, isApproved, EmployeeName, Name, dateRespond, typeDoc
+                ApprovalNotificationEmployee(resultRequest.Data.Person.Email, approveReject.Approve,
+                   resultRequest.Data.Person.FirstName + " " + resultRequest.Data.Person.LastName, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName,
+                   resultRequest.Data.RequestDate.ToString(), resultRequest.Data.DocumentType.TypeName);
 
-                return sendEmailResult.Status;
+                return "200";
             }
 
             return "500";
