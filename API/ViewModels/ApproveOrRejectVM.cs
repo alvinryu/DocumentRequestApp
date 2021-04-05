@@ -9,7 +9,7 @@ namespace API.ViewModels
     {
         public int Approve { set; get; }
         public int RequestID { set; get; } 
-        public int HR_NIK { set; get; } 
+        public string HR_NIK { set; get; } 
         public DateTime ApproveHRDate { set; get; }
         public DateTime ApproveRMDate { set; get; }
         public string Email { set; get; }
