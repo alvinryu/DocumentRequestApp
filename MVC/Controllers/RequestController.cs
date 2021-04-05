@@ -31,7 +31,7 @@ namespace MVC.Controllers
         string MessageSubject;
         string MessageBody;
 
-        public async void ApprovalNotificationRM(string emailRM, string EmployeeName, string RMName, string dateRequest, string typeDoc)
+        public async Task ApprovalNotificationRMAsync(string emailRM, string EmployeeName, string RMName, string dateRequest, string typeDoc)
         {
             MessageSubject = "New Document Request by " + EmployeeName;
             MessageBody = "Dear Mr/Ms/Mrs " + RMName
@@ -44,7 +44,7 @@ namespace MVC.Controllers
             var sendEmailResult = await SendEmail(sendEmailVM);
         }
 
-        public async void ApprovalNotificationHR(string emailHR, string EmployeeName, string RMName, string HRName, string dateRequest, string typeDoc)
+        public async Task ApprovalNotificationHRAsync(string emailHR, string EmployeeName, string RMName, string HRName, string dateRequest, string typeDoc)
         {
             MessageSubject = "New Document Request by " + EmployeeName;
             MessageBody = "Dear Mr/Ms/Mrs " + HRName
@@ -59,7 +59,7 @@ namespace MVC.Controllers
             var sendEmailResult = await SendEmail(sendEmailVM);
         }
 
-        public async void ApprovalNotificationEmployee(string email, int isApproved, string EmployeeName, string Name, string dateRespond, string typeDoc)
+        public async Task ApprovalNotificationEmployeeAsync(string email, int isApproved, string EmployeeName, string Name, string dateRespond, string typeDoc)
         {
             MessageSubject = "Document Request " + ((isApproved == 0) ? "Rejected" : "Approved");
             MessageBody = "Dear Mr/Ms/Mrs " + EmployeeName
@@ -96,7 +96,7 @@ namespace MVC.Controllers
             string docTypeApiResponse = await docTypeResponse.Content.ReadAsStringAsync();
             var docResult = JsonConvert.DeserializeObject<ResponseVM<DocumentType>>(docTypeApiResponse);
 
-            ApprovalNotificationRM(emailRM, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName, rmResult.Data.FirstName+rmResult.Data.LastName, 
+            await ApprovalNotificationRMAsync(emailRM, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName, rmResult.Data.FirstName+rmResult.Data.LastName, 
                 request.RequestDate.ToString(), docResult.Data.TypeName);
 
             return new JsonResult(result);
@@ -141,7 +141,7 @@ namespace MVC.Controllers
             var resultRequest = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponseRequest);
 
             //email, isApproved, EmployeeName, Name, dateRespond, typeDoc
-            ApprovalNotificationEmployee(approveReject.Email, approveReject.Approve, resultRequest.Data.Person.FirstName+" "+ resultRequest.Data.Person.LastName,
+            await ApprovalNotificationEmployeeAsync(approveReject.Email, approveReject.Approve, resultRequest.Data.Person.FirstName+" "+ resultRequest.Data.Person.LastName,
                 resultPersonHR.Data.FirstName+" "+resultPersonHR.Data.LastName, resultRequest.Data.RequestDate.ToString(), 
                 resultRequest.Data.DocumentType.TypeName);
 
@@ -238,10 +238,14 @@ namespace MVC.Controllers
             string apiResponseRequest = await responseRequest.Content.ReadAsStringAsync();
             var resultRequest = JsonConvert.DeserializeObject<ResponseVM<Request>>(apiResponseRequest);
 
+            using var responsePersonEmp = await httpClient.GetAsync("Person/" + resultRequest.Data.PersonNIK);
+            string apiResponsePersonEmp = await responsePersonHR.Content.ReadAsStringAsync();
+            var resultPersonEmp = JsonConvert.DeserializeObject<ResponseVM<Person>>(apiResponsePersonHR);
+
             if (approveReject.Approve == 1)
             {
                 //emailHR, EmployeeName, RMName, HRName, dateRequest, typeDoc
-                ApprovalNotificationHR(emailHR, resultRequest.Data.Person.FirstName+" "+ resultRequest.Data.Person.LastName, 
+                await ApprovalNotificationHRAsync(emailHR, resultPersonEmp.Data.FirstName+" "+ resultPersonEmp.Data.LastName, 
                     resultPerson.Data.FirstName + " " + resultPerson.Data.LastName, resultPersonHR.Data.FirstName + " " + resultPersonHR.Data.LastName, 
                     resultRequest.Data.RequestDate.ToString(), resultRequest.Data.DocumentType.TypeName);
 
@@ -250,7 +254,7 @@ namespace MVC.Controllers
             else if (approveReject.Approve == 0)
             {
                 //email, isApproved, EmployeeName, Name, dateRespond, typeDoc
-                ApprovalNotificationEmployee(resultRequest.Data.Person.Email, approveReject.Approve,
+                await ApprovalNotificationEmployeeAsync(resultRequest.Data.Person.Email, approveReject.Approve,
                    resultRequest.Data.Person.FirstName + " " + resultRequest.Data.Person.LastName, resultPerson.Data.FirstName+" "+resultPerson.Data.LastName,
                    resultRequest.Data.RequestDate.ToString(), resultRequest.Data.DocumentType.TypeName);
 

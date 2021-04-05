@@ -41,5 +41,21 @@ namespace API.Controllers
                 return StatusCode(500, new { status = HttpStatusCode.InternalServerError, data = result, message = "Terjadi Kesalahan" }); ;
             }
         }
+
+        [HttpGet("{key}")]
+        [AllowAnonymous]
+        public override ActionResult<DocumentType> Get(int key)
+        {
+            var result = _documentTypeRepository.Get(key);
+
+            if (result != null)
+            {
+                return Ok(new { status = HttpStatusCode.OK, data = result, message = "Data Ditemukan" });
+            }
+            else
+            {
+                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, data = result, message = "Terjadi Kesalahan" }); ;
+            }
+        }
     }
 }
